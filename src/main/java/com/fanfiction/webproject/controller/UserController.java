@@ -16,9 +16,10 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @GetMapping
-    public String getUser() {
-        return "get user";
+    @GetMapping(path = "/{id}")
+    public UserRest getUser(@PathVariable String id) {
+        UserDto userDto = userService.getUserByUserId(id);
+        return UserMapper.INSTANCE.dtoToRest(userDto);
     }
 
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})

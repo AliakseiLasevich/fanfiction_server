@@ -6,6 +6,7 @@ import com.fanfiction.webproject.exceptions.UserServiceException;
 import com.fanfiction.webproject.mappers.UserMapper;
 import com.fanfiction.webproject.repository.UserRepository;
 import com.fanfiction.webproject.service.interfaces.UserService;
+import com.fanfiction.webproject.ui.model.response.ErrorMessages;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
@@ -36,7 +37,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDto createUser(UserDto userDto) {
         if (userRepository.findByEmail(userDto.getEmail()) != null)
-            throw new UserServiceException("Record already exists");
+            throw new UserServiceException(ErrorMessages.RECORD_ALREADY_EXISTS.getErrorMessage());
         UserEntity userEntity = UserMapper.INSTANCE.dtoToEntity(userDto);
         userEntity.setUserId(utils.generateUserId(30));
         userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));

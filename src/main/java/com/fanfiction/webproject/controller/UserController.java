@@ -24,7 +24,8 @@ public class UserController {
         return UserMapper.INSTANCE.dtoToRest(userDto);
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public UserRest createUser(@RequestBody UserDetailsRequestModel userDetails) {
         if (userDetails.getEmail() == null || userDetails.getPassword() == null) {
             throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
@@ -34,9 +35,18 @@ public class UserController {
         return UserMapper.INSTANCE.dtoToRest(createdUser);
     }
 
-    @PutMapping
-    public String updateUser() {
-        return "update";
+    @PutMapping(path = "/{id}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public UserRest updateUser(@PathVariable String id, @RequestBody UserDetailsRequestModel userDetails) {
+        if (userDetails.getEmail() == null || userDetails.getPassword() == null) {
+            throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
+        }
+
+        UserDto userDto = UserMapper.INSTANCE.requestModelToDto(userDetails);
+        userDto.setUserId(id);
+        UserDto updatedUser = userService.updateUser(userDto);
+        return UserMapper.INSTANCE.dtoToRest(updatedUser);
     }
 
     @DeleteMapping

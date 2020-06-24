@@ -71,5 +71,20 @@ public class UserServiceImpl implements UserService {
             throw new UsernameNotFoundException(id);
         }
         return UserMapper.INSTANCE.entitytoDto(userEntity);
+
+    }
+
+    @Override
+    public UserDto updateUser(UserDto userDto) {
+        if (userRepository.findByUserId(userDto.getUserId()) == null) {
+            throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
+        }
+        UserEntity userEntity = userRepository.findByUserId(userDto.getUserId());
+        userEntity.setFirstName(userDto.getFirstName());
+        userEntity.setLastName(userDto.getLastName());
+        userEntity.setEmail(userDto.getEmail());
+        userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
+        UserEntity storedUserDetails = userRepository.save(userEntity);
+        return UserMapper.INSTANCE.entitytoDto(storedUserDetails);
     }
 }

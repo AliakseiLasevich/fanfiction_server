@@ -3,11 +3,12 @@ package com.fanfiction.webproject.entity;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
 @Data
-public class Artwork {
+public class Artwork implements Serializable {
 
     @Id
     @GeneratedValue
@@ -22,10 +23,10 @@ public class Artwork {
     @Column(nullable = false)
     private Boolean active = true;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<Chapter> chapters;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<Tag> tags;
 
     @OneToOne

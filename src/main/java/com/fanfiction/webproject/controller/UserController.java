@@ -6,6 +6,8 @@ import com.fanfiction.webproject.mappers.UserMapper;
 import com.fanfiction.webproject.service.interfaces.UserService;
 import com.fanfiction.webproject.ui.model.request.UserDetailsRequestModel;
 import com.fanfiction.webproject.ui.model.response.ErrorMessages;
+import com.fanfiction.webproject.ui.model.response.OperationStatusModel;
+import com.fanfiction.webproject.ui.model.response.RequestOperationStatus;
 import com.fanfiction.webproject.ui.model.response.UserRest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -49,9 +51,15 @@ public class UserController {
         return UserMapper.INSTANCE.dtoToRest(updatedUser);
     }
 
-    @DeleteMapping
-    public String deleteUser() {
-        return "delete";
+    @DeleteMapping(path = "/{id}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public OperationStatusModel deleteUser(@PathVariable String id) {
+
+        userService.deleteUser(id);
+        OperationStatusModel operationStatusModel = new OperationStatusModel();
+        operationStatusModel.setOperationName(RequestOperationName.DELETE.name());
+        operationStatusModel.setOperationResult(RequestOperationStatus.SUCCESS.name());
+        return operationStatusModel;
     }
 
 }

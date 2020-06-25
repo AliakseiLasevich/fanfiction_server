@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         UserEntity userEntity = userRepository.findByEmail(email);
         if (userEntity == null) {
-            throw new UsernameNotFoundException(email);
+            throw new UsernameNotFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
         }
         return new User(userEntity.getEmail(), userEntity.getEncryptedPassword(), new ArrayList<>());
     }
@@ -58,7 +58,7 @@ public class UserServiceImpl implements UserService {
     public UserDto getUser(String email) {
         UserEntity userEntity = userRepository.findByEmail(email);
         if (userEntity == null)
-            throw new UsernameNotFoundException(email);
+            throw new UsernameNotFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
         UserDto returnValue = new UserDto();
         BeanUtils.copyProperties(userEntity, returnValue);
         return returnValue;
@@ -68,7 +68,7 @@ public class UserServiceImpl implements UserService {
     public UserDto getUserByUserId(String id) {
         UserEntity userEntity = userRepository.findByUserId(id);
         if (userEntity == null) {
-            throw new UsernameNotFoundException(id);
+            throw new UsernameNotFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
         }
         return UserMapper.INSTANCE.entitytoDto(userEntity);
 
@@ -86,5 +86,15 @@ public class UserServiceImpl implements UserService {
         userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
         UserEntity storedUserDetails = userRepository.save(userEntity);
         return UserMapper.INSTANCE.entitytoDto(storedUserDetails);
+    }
+
+    @Override
+    public void deleteUser(String id) {
+        UserEntity userEntity = userRepository.findByUserId(id);
+        if (userEntity == null) {
+            throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
+        }
+        userEntity.setActive(false);
+        userRepository.save(userEntity);
     }
 }

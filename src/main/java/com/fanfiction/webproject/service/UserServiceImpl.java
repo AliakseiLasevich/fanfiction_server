@@ -7,17 +7,18 @@ import com.fanfiction.webproject.mappers.UserMapper;
 import com.fanfiction.webproject.repository.UserRepository;
 import com.fanfiction.webproject.service.interfaces.UserService;
 import com.fanfiction.webproject.ui.model.response.ErrorMessages;
-import org.springframework.beans.BeanUtils;
+import com.fanfiction.webproject.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.fanfiction.webproject.utils.Utils;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -46,6 +47,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<UserDto> findAll() {
+        List<UserEntity> userEntities = userRepository.findAll();
+        if (userEntities.size() == 0) {
+            throw new UserServiceException(ErrorMessages.NO_RECORDS_IN_BASE.getErrorMessage());
+        }
+        return userEntities.stream()
+                .map(UserMapper.INSTANCE::entitytoDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         UserEntity userEntity = userRepository.findByEmail(email);
         if (userEntity == null) {
@@ -55,13 +67,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto getUser(String email) {
+    public UserDto getUserDto(String email) {
         UserEntity userEntity = userRepository.findByEmail(email);
         if (userEntity == null)
             throw new UsernameNotFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
-        UserDto returnValue = new UserDto();
-        BeanUtils.copyProperties(userEntity, returnValue);
-        return returnValue;
+        return UserMapper.INSTANCE.entitytoDto(userEntity);
     }
 
     @Override
@@ -71,7 +81,6 @@ public class UserServiceImpl implements UserService {
             throw new UsernameNotFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
         }
         return UserMapper.INSTANCE.entitytoDto(userEntity);
-
     }
 
     @Override
@@ -96,5 +105,15 @@ public class UserServiceImpl implements UserService {
         }
         userEntity.setActive(false);
         userRepository.save(userEntity);
+    }
+
+
+    @Override
+    public UserEntity getUserEntityByUserId(String userId) {
+        UserEntity userEntity = userRepository.findByUserId(userId);
+        if (userEntity == null) {
+            throw new UsernameNotFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
+        }
+        return userEntity;
     }
 }

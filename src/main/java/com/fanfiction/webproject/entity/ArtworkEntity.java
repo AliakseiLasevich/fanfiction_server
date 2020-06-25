@@ -8,7 +8,7 @@ import java.util.List;
 
 @Entity
 @Data
-public class Artwork implements Serializable {
+public class ArtworkEntity implements Serializable {
 
     @Id
     @GeneratedValue
@@ -32,6 +32,6 @@ public class Artwork implements Serializable {
     @OneToOne
     private Genre genre;
 
-    @ManyToMany(mappedBy = "artworks")
+    @ManyToMany(mappedBy = "artworkEntities")
     private List<UserEntity> users;
 }

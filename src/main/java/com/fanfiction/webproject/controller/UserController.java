@@ -13,12 +13,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
     @Autowired
     UserService userService;
+
+    @GetMapping(path = "/")
+    public List<UserRest> allUsers() {
+        List<UserDto> userDtos = userService.findAll();
+        return userDtos.stream()
+                .map(UserMapper.INSTANCE::dtoToRest)
+                .collect(Collectors.toList());
+    }
 
     @GetMapping(path = "/{id}")
     public UserRest getUser(@PathVariable String id) {

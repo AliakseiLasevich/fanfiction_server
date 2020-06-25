@@ -38,6 +38,6 @@ public class UserEntity implements Serializable {
     private Boolean active = true;
 
     @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    private List<Artwork> artworks;
+    private List<ArtworkEntity> artworkEntities;
 
 }

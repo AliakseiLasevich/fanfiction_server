@@ -10,6 +10,7 @@ import java.util.List;
 @Data
 public class ArtworkDto {
 
+    private String userId;
     private String artworkId;
     private String summary;
     private List<Chapter> chapters;

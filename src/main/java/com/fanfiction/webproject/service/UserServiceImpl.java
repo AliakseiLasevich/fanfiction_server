@@ -23,9 +23,9 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl implements UserService {
 
-    final UserRepository userRepository;
-    final Utils utils;
-    final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final UserRepository userRepository;
+    private final Utils utils;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository, Utils utils, BCryptPasswordEncoder bCryptPasswordEncoder) {
@@ -40,10 +40,10 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findByEmail(userDto.getEmail()) != null)
             throw new UserServiceException(ErrorMessages.RECORD_ALREADY_EXISTS.getErrorMessage());
         UserEntity userEntity = UserMapper.INSTANCE.dtoToEntity(userDto);
-        userEntity.setUserId(utils.generateUserId(30));
+        userEntity.setUserId(utils.generateRandomString(30));
         userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
         UserEntity storedUserDetails = userRepository.save(userEntity);
-        return UserMapper.INSTANCE.entitytoDto(storedUserDetails);
+        return UserMapper.INSTANCE.entityToDto(storedUserDetails);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
             throw new UserServiceException(ErrorMessages.NO_RECORDS_IN_BASE.getErrorMessage());
         }
         return userEntities.stream()
-                .map(UserMapper.INSTANCE::entitytoDto)
+                .map(UserMapper.INSTANCE::entityToDto)
                 .collect(Collectors.toList());
     }
 
@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = userRepository.findByEmail(email);
         if (userEntity == null)
             throw new UsernameNotFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
-        return UserMapper.INSTANCE.entitytoDto(userEntity);
+        return UserMapper.INSTANCE.entityToDto(userEntity);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService {
         if (userEntity == null) {
             throw new UsernameNotFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
         }
-        return UserMapper.INSTANCE.entitytoDto(userEntity);
+        return UserMapper.INSTANCE.entityToDto(userEntity);
     }
 
     @Override
@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService {
         userEntity.setEmail(userDto.getEmail());
         userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
         UserEntity storedUserDetails = userRepository.save(userEntity);
-        return UserMapper.INSTANCE.entitytoDto(storedUserDetails);
+        return UserMapper.INSTANCE.entityToDto(storedUserDetails);
     }
 
     @Override

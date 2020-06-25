@@ -10,6 +10,7 @@ import com.fanfiction.webproject.ui.model.response.OperationStatusModel;
 import com.fanfiction.webproject.ui.model.response.RequestOperationStatus;
 import com.fanfiction.webproject.ui.model.response.UserRest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,6 +40,7 @@ public class UserController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
     public UserRest createUser(@RequestBody UserDetailsRequestModel userDetails) {
         if (userDetails.getEmail() == null || userDetails.getPassword() == null) {
             throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());

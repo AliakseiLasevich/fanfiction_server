@@ -8,4 +8,5 @@ public class UserDetailsRequestModel {
     private String firstName;
     private String lastName;
     private String password;
+    private Boolean active = true;
 }

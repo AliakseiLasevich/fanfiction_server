@@ -37,7 +37,7 @@ public class UserEntity implements Serializable {
     @Column(nullable = false)
     private Boolean active = true;
 
-    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    private List<ArtworkEntity> artworkEntities;
+    @OneToMany(mappedBy = "user")
+    private List<Artwork> artworkEntities;
 
 }

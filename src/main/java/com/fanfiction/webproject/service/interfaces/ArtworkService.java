@@ -10,4 +10,6 @@ public interface ArtworkService {
     ArtworkDto findById(String artworkId);
 
     List<ArtworkDto> findByUserId(String userId);
+
+    ArtworkDto createArtwork(ArtworkDto artworkDto);
 }

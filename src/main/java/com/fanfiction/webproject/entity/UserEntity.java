@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity(name = "users")
 @Data
@@ -35,5 +36,8 @@ public class UserEntity implements Serializable {
 
     @Column(nullable = false)
     private Boolean active = true;
+
+    @ManyToMany
+    private List<Artwork> artworks;
 
 }

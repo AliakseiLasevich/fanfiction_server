@@ -5,6 +5,7 @@ import com.fanfiction.webproject.entity.UserEntity;
 import com.fanfiction.webproject.exceptions.UserServiceException;
 import com.fanfiction.webproject.mappers.UserMapper;
 import com.fanfiction.webproject.repository.UserRepository;
+import com.fanfiction.webproject.service.interfaces.EmailService;
 import com.fanfiction.webproject.service.interfaces.UserService;
 import com.fanfiction.webproject.ui.model.response.ErrorMessages;
 import com.fanfiction.webproject.utils.Utils;
@@ -16,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,26 +28,32 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final Utils utils;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final EmailService emailService;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, Utils utils, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, Utils utils, BCryptPasswordEncoder bCryptPasswordEncoder, EmailService emailService) {
         this.userRepository = userRepository;
         this.utils = utils;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.emailService = emailService;
     }
 
     @Override
     @Transactional
-    public UserDto createUser(UserDto userDto) {
+    public UserDto createUser(UserDto userDto, HttpServletRequest request) {
         if (userRepository.findByEmail(userDto.getEmail()) != null)
             throw new UserServiceException(ErrorMessages.RECORD_ALREADY_EXISTS.getErrorMessage());
         UserEntity userEntity = UserMapper.INSTANCE.dtoToEntity(userDto);
         userEntity.setUserId(utils.generateRandomString(30));
         userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
-        userEntity.setEmailVerificationToken(utils.generateEmailVerificationToken(userDto.getEmail()));
+        String emailVerificationToken = utils.generateEmailVerificationToken(userDto.getEmail());
+        userEntity.setEmailVerificationToken(emailVerificationToken);
         UserEntity storedUserDetails = userRepository.save(userEntity);
+        emailService.sendVerificationEmailToken(userDto.getEmail(), emailVerificationToken, request);
         return UserMapper.INSTANCE.entityToDto(storedUserDetails);
     }
+
+
 
     @Override
     public List<UserDto> findAll() {
@@ -127,10 +135,10 @@ public class UserServiceImpl implements UserService {
         boolean returnValue = false;
         UserEntity userEntity = userRepository.findUserByEmailVerificationToken(token);
         if (userEntity != null) {
-                userEntity.setEmailVerificationToken(null);
-                userEntity.setEmailVerificationStatus(Boolean.TRUE);
-                userRepository.save(userEntity);
-                returnValue = true;
+            userEntity.setEmailVerificationToken(null);
+            userEntity.setEmailVerificationStatus(Boolean.TRUE);
+            userRepository.save(userEntity);
+            returnValue = true;
         }
         return returnValue;
     }

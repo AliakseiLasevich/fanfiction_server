@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,12 +41,12 @@ public class UserController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public UserRest createUser(@RequestBody UserDetailsRequestModel userDetails) {
+    public UserRest createUser(@RequestBody UserDetailsRequestModel userDetails, HttpServletRequest request) {
         if (userDetails.getEmail() == null || userDetails.getPassword() == null) {
             throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
         }
         UserDto userDto = UserMapper.INSTANCE.requestModelToDto(userDetails);
-        UserDto createdUser = userService.createUser(userDto);
+        UserDto createdUser = userService.createUser(userDto, request);
         return UserMapper.INSTANCE.dtoToRest(createdUser);
     }
 

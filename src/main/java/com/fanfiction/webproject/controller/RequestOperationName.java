@@ -1,5 +1,6 @@
 package com.fanfiction.webproject.controller;
 
 public enum RequestOperationName {
-    DELETE
+    DELETE,
+    VERIFY_EMAIL
 }

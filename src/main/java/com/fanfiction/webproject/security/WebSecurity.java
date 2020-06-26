@@ -36,6 +36,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                     .antMatchers(HttpMethod.POST, SecurityConstants.SIGN_UP_URL)
                     .permitAll()
+                .antMatchers(HttpMethod.GET, SecurityConstants.VERIFICATION_EMAIL_URL)
+                    .permitAll()
                 .anyRequest()
                     .authenticated()
                 .and()
@@ -58,8 +60,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource()
-    {
+    public CorsConfigurationSource corsConfigurationSource(){
         final CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE","OPTIONS"));

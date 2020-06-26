@@ -38,8 +38,7 @@ public class UserController {
         return UserMapper.INSTANCE.dtoToRest(userDto);
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public UserRest createUser(@RequestBody UserDetailsRequestModel userDetails) {
         if (userDetails.getEmail() == null || userDetails.getPassword() == null) {
@@ -51,13 +50,11 @@ public class UserController {
     }
 
     @PutMapping(path = "/{id}",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public UserRest updateUser(@PathVariable String id, @RequestBody UserDetailsRequestModel userDetails) {
         if (userDetails.getEmail() == null || userDetails.getPassword() == null) {
             throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
         }
-
         UserDto userDto = UserMapper.INSTANCE.requestModelToDto(userDetails);
         userDto.setUserId(id);
         UserDto updatedUser = userService.updateUser(userDto);
@@ -67,12 +64,25 @@ public class UserController {
     @DeleteMapping(path = "/{id}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public OperationStatusModel deleteUser(@PathVariable String id) {
-
         userService.deleteUser(id);
         OperationStatusModel operationStatusModel = new OperationStatusModel();
         operationStatusModel.setOperationName(RequestOperationName.DELETE.name());
         operationStatusModel.setOperationResult(RequestOperationStatus.SUCCESS.name());
         return operationStatusModel;
+    }
+
+    @GetMapping(path = "/email-verification", produces = MediaType.APPLICATION_JSON_VALUE)
+    public OperationStatusModel verifyEmailToken(@RequestParam(value = "token") String token) {
+        OperationStatusModel returnValue = new OperationStatusModel();
+        returnValue.setOperationName(RequestOperationName.VERIFY_EMAIL.name());
+        boolean isVerified = userService.verifyEmailToken(token);
+        if (isVerified) {
+            returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
+        } else {
+            returnValue.setOperationResult(RequestOperationStatus.ERROR.name());
+        }
+
+        return returnValue;
     }
 
 }

@@ -42,6 +42,7 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = UserMapper.INSTANCE.dtoToEntity(userDto);
         userEntity.setUserId(utils.generateRandomString(30));
         userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
+        userEntity.setEmailVerificationToken(utils.generateEmailVerificationToken(userDto.getEmail()));
         UserEntity storedUserDetails = userRepository.save(userEntity);
         return UserMapper.INSTANCE.entityToDto(storedUserDetails);
     }
@@ -63,7 +64,11 @@ public class UserServiceImpl implements UserService {
         if (userEntity == null) {
             throw new UsernameNotFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
         }
-        return new User(userEntity.getEmail(), userEntity.getEncryptedPassword(), new ArrayList<>());
+        return new User(userEntity.getEmail(),
+                userEntity.getEncryptedPassword(),
+                userEntity.getEmailVerificationStatus(),
+                true, true, true,
+                new ArrayList<>());
     }
 
     @Override
@@ -115,5 +120,18 @@ public class UserServiceImpl implements UserService {
             throw new UsernameNotFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
         }
         return userEntity;
+    }
+
+    @Override
+    public boolean verifyEmailToken(String token) {
+        boolean returnValue = false;
+        UserEntity userEntity = userRepository.findUserByEmailVerificationToken(token);
+        if (userEntity != null) {
+                userEntity.setEmailVerificationToken(null);
+                userEntity.setEmailVerificationStatus(Boolean.TRUE);
+                userRepository.save(userEntity);
+                returnValue = true;
+        }
+        return returnValue;
     }
 }

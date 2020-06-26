@@ -20,4 +20,6 @@ public interface UserService extends UserDetailsService {
     List<UserDto> findAll();
 
     UserEntity getUserEntityByUserId(String userId);
+
+    boolean verifyEmailToken(String token);
 }

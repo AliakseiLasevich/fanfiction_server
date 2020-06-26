@@ -52,7 +52,7 @@ public class ArtworkServiceImpl implements ArtworkService {
             throw new ArtworkServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
         }
 
-        return null;
+        return ArtworkMapper.INSTANCE.entityToDto(artwork);
     }
 
     @Override

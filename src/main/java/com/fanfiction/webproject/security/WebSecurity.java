@@ -1,5 +1,6 @@
 package com.fanfiction.webproject.security;
 
+import com.fanfiction.webproject.repository.UserRepository;
 import com.fanfiction.webproject.service.interfaces.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
@@ -20,10 +21,12 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 
     private final UserService userService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final UserRepository userRepository;
 
-    public WebSecurity(UserService userService, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public WebSecurity(UserService userService, BCryptPasswordEncoder bCryptPasswordEncoder, UserRepository userRepository) {
         this.userService = userService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.userRepository = userRepository;
     }
 
 
@@ -34,15 +37,17 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .and()
                     .csrf().disable()
                 .authorizeRequests()
-                    .antMatchers(HttpMethod.POST, SecurityConstants.SIGN_UP_URL)
+                .antMatchers(HttpMethod.POST, SecurityConstants.SIGN_UP_URL)
                     .permitAll()
                 .antMatchers(HttpMethod.GET, SecurityConstants.VERIFICATION_EMAIL_URL)
                     .permitAll()
+                .antMatchers(HttpMethod.DELETE, "/users/**")
+                    .hasAnyAuthority("DELETE_AUTHORITY")
                 .anyRequest()
                     .authenticated()
                 .and()
                     .addFilter(getAuthenticationFilter())
-                    .addFilter(new AuthorizationFilter(authenticationManager()))
+                    .addFilter(new AuthorizationFilter(authenticationManager(), userRepository))
                 .sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         ;

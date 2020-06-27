@@ -5,6 +5,7 @@ import com.fanfiction.webproject.entity.UserEntity;
 import com.fanfiction.webproject.exceptions.UserServiceException;
 import com.fanfiction.webproject.mappers.UserMapper;
 import com.fanfiction.webproject.repository.UserRepository;
+import com.fanfiction.webproject.security.UserPrincipal;
 import com.fanfiction.webproject.service.interfaces.EmailService;
 import com.fanfiction.webproject.service.interfaces.UserService;
 import com.fanfiction.webproject.ui.model.response.ErrorMessages;
@@ -54,7 +55,6 @@ public class UserServiceImpl implements UserService {
     }
 
 
-
     @Override
     public List<UserDto> findAll() {
         List<UserEntity> userEntities = userRepository.findAll();
@@ -72,11 +72,12 @@ public class UserServiceImpl implements UserService {
         if (userEntity == null) {
             throw new UsernameNotFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
         }
-        return new User(userEntity.getEmail(),
-                userEntity.getEncryptedPassword(),
-                userEntity.getEmailVerificationStatus(),
-                true, true, true,
-                new ArrayList<>());
+        return new UserPrincipal(userEntity);
+//        return new User(userEntity.getEmail(),
+//                userEntity.getEncryptedPassword(),
+//                userEntity.getEmailVerificationStatus(),
+//                true, true, true,
+//                new ArrayList<>());
     }
 
     @Override

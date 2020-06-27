@@ -4,10 +4,12 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 
-@Entity(name = "users")
 @Data
+@Entity
+@Table(name = "users")
 public class UserEntity implements Serializable {
 
     @Id
@@ -39,5 +41,11 @@ public class UserEntity implements Serializable {
 
     @OneToMany(mappedBy = "user")
     private List<Artwork> artworkEntities;
+
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch = FetchType.EAGER)
+    @JoinTable(name = "users_roles",
+            joinColumns = @JoinColumn(name = "users_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "roles_id", referencedColumnName = "id"))
+    private Collection<RoleEntity> roles;
 
 }

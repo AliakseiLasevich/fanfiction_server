@@ -9,12 +9,16 @@ import com.fanfiction.webproject.ui.model.response.ErrorMessages;
 import com.fanfiction.webproject.ui.model.response.OperationStatusModel;
 import com.fanfiction.webproject.ui.model.response.RequestOperationStatus;
 import com.fanfiction.webproject.ui.model.response.UserRest;
+import com.fanfiction.webproject.security.Roles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,6 +50,9 @@ public class UserController {
             throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
         }
         UserDto userDto = UserMapper.INSTANCE.requestModelToDto(userDetails);
+
+        userDto.setRoles(new HashSet<>(Arrays.asList(Roles.ROLE_USER.name())));
+
         UserDto createdUser = userService.createUser(userDto, request);
         return UserMapper.INSTANCE.dtoToRest(createdUser);
     }
@@ -62,6 +69,7 @@ public class UserController {
         return UserMapper.INSTANCE.dtoToRest(updatedUser);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or #id == principal.userId")
     @DeleteMapping(path = "/{id}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public OperationStatusModel deleteUser(@PathVariable String id) {

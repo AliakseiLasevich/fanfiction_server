@@ -1,17 +1,18 @@
 package com.fanfiction.webproject.service;
 
 import com.fanfiction.webproject.dto.UserDto;
+import com.fanfiction.webproject.entity.RoleEntity;
 import com.fanfiction.webproject.entity.UserEntity;
 import com.fanfiction.webproject.exceptions.UserServiceException;
 import com.fanfiction.webproject.mappers.UserMapper;
 import com.fanfiction.webproject.repository.UserRepository;
 import com.fanfiction.webproject.security.UserPrincipal;
 import com.fanfiction.webproject.service.interfaces.EmailService;
+import com.fanfiction.webproject.service.interfaces.RoleService;
 import com.fanfiction.webproject.service.interfaces.UserService;
 import com.fanfiction.webproject.ui.model.response.ErrorMessages;
 import com.fanfiction.webproject.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,7 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,13 +32,16 @@ public class UserServiceImpl implements UserService {
     private final Utils utils;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final EmailService emailService;
+    private final RoleService roleService;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, Utils utils, BCryptPasswordEncoder bCryptPasswordEncoder, EmailService emailService) {
+    public UserServiceImpl(UserRepository userRepository, Utils utils, BCryptPasswordEncoder bCryptPasswordEncoder, EmailService emailService,
+                           RoleService roleService) {
         this.userRepository = userRepository;
         this.utils = utils;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.emailService = emailService;
+        this.roleService = roleService;
     }
 
     @Override
@@ -49,6 +54,17 @@ public class UserServiceImpl implements UserService {
         userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
         String emailVerificationToken = utils.generateEmailVerificationToken(userDto.getEmail());
         userEntity.setEmailVerificationToken(emailVerificationToken);
+
+        //set roles
+        Collection<RoleEntity> roleEntities = new HashSet<>();
+        for (String role : userDto.getRoles()) {
+            RoleEntity roleEntity = roleService.findByName(role);
+            if (roleEntity != null) {
+                roleEntities.add(roleEntity);
+            }
+        }
+        userEntity.setRoles(roleEntities);
+
         UserEntity storedUserDetails = userRepository.save(userEntity);
         emailService.sendVerificationEmailToken(userDto.getEmail(), emailVerificationToken, request);
         return UserMapper.INSTANCE.entityToDto(storedUserDetails);
@@ -73,11 +89,6 @@ public class UserServiceImpl implements UserService {
             throw new UsernameNotFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
         }
         return new UserPrincipal(userEntity);
-//        return new User(userEntity.getEmail(),
-//                userEntity.getEncryptedPassword(),
-//                userEntity.getEmailVerificationStatus(),
-//                true, true, true,
-//                new ArrayList<>());
     }
 
     @Override

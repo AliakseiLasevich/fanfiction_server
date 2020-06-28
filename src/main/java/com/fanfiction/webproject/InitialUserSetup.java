@@ -6,6 +6,7 @@ import com.fanfiction.webproject.entity.UserEntity;
 import com.fanfiction.webproject.repository.AuthorityRepository;
 import com.fanfiction.webproject.repository.RoleRepository;
 import com.fanfiction.webproject.repository.UserRepository;
+import com.fanfiction.webproject.security.Roles;
 import com.fanfiction.webproject.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -43,8 +44,8 @@ public class InitialUserSetup {
         AuthorityEntity writeAuthority = createAuthority("WRITE_AUTHORITY");
         AuthorityEntity deleteAuthority = createAuthority("DELETE_AUTHORITY");
 
-        RoleEntity roleUser = createRole("ROLE_USER", Arrays.asList(readAuthority, writeAuthority));
-        RoleEntity roleAdmin = createRole("ROLE_ADMIN", Arrays.asList(readAuthority, writeAuthority, deleteAuthority));
+        RoleEntity roleUser = createRole(Roles.ROLE_USER.name(), Arrays.asList(readAuthority, writeAuthority));
+        RoleEntity roleAdmin = createRole(Roles.ROLE_ADMIN.name(), Arrays.asList(readAuthority, writeAuthority, deleteAuthority));
 
         if (roleAdmin == null) {
             return;

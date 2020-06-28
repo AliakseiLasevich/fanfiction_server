@@ -3,6 +3,7 @@ package com.fanfiction.webproject.dto;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 @Data
 public class UserDto implements Serializable {
@@ -17,4 +18,5 @@ public class UserDto implements Serializable {
     private String emailVerificationToken;
     private Boolean emailVerificationStatus = false;
     private Boolean active;
+    private Collection<String> roles;
 }

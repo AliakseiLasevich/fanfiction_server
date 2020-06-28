@@ -6,6 +6,7 @@ import com.fanfiction.webproject.entity.UserEntity;
 import com.fanfiction.webproject.exceptions.UserServiceException;
 import com.fanfiction.webproject.mappers.UserMapper;
 import com.fanfiction.webproject.repository.UserRepository;
+import com.fanfiction.webproject.security.Roles;
 import com.fanfiction.webproject.security.UserPrincipal;
 import com.fanfiction.webproject.service.interfaces.EmailService;
 import com.fanfiction.webproject.service.interfaces.RoleService;
@@ -57,11 +58,9 @@ public class UserServiceImpl implements UserService {
 
         //set roles
         Collection<RoleEntity> roleEntities = new HashSet<>();
-        for (String role : userDto.getRoles()) {
-            RoleEntity roleEntity = roleService.findByName(role);
-            if (roleEntity != null) {
-                roleEntities.add(roleEntity);
-            }
+        RoleEntity roleEntity = roleService.findByName(Roles.ROLE_USER.name());
+        if (roleEntity != null) {
+            roleEntities.add(roleEntity);
         }
         userEntity.setRoles(roleEntities);
 

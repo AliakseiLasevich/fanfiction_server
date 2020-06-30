@@ -26,13 +26,16 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @GetMapping(path = "/")
+
+    @GetMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<UserRest> allUsers() {
         List<UserDto> userDtos = userService.findAll();
         return userDtos.stream()
                 .map(UserMapper.INSTANCE::dtoToRest)
                 .collect(Collectors.toList());
     }
+
 
     @GetMapping(path = "/{id}")
     public UserRest getUser(@PathVariable String id) {

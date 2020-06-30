@@ -1,5 +1,6 @@
 package com.fanfiction.webproject.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -20,6 +21,7 @@ public class RoleEntity implements Serializable {
     @Column(nullable = false, length = 25)
     private String name;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "roles")
     private Collection<UserEntity> users;
 

@@ -64,7 +64,7 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return userEntity.getNonBlocked();
     }
 
     @Override
@@ -74,6 +74,6 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return userEntity.getEmailVerificationStatus();
+        return userEntity.getEmailVerificationStatus() && !userEntity.getDeleted();
     }
 }

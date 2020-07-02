@@ -37,7 +37,10 @@ public class UserEntity implements Serializable {
     private Boolean emailVerificationStatus = false;
 
     @Column(nullable = false)
-    private Boolean active = true;
+    private Boolean nonBlocked = true;
+
+    @Column(nullable = false)
+    private Boolean deleted = false;
 
     @OneToMany(mappedBy = "user")
     private List<Artwork> artworkEntities;

@@ -72,7 +72,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> findAll() {
-        List<UserEntity> userEntities = userRepository.findAll();
+        List<UserEntity> userEntities = userRepository.findAll().stream()
+                .filter(userEntity -> !userEntity.getDeleted())
+                .collect(Collectors.toList());
         if (userEntities.size() == 0) {
             throw new UserServiceException(ErrorMessages.NO_RECORDS_IN_BASE.getErrorMessage());
         }
@@ -112,12 +114,23 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findByUserId(userDto.getUserId()) == null) {
             throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
         }
+
         UserEntity userEntity = userRepository.findByUserId(userDto.getUserId());
         userEntity.setFirstName(userDto.getFirstName());
         userEntity.setLastName(userDto.getLastName());
         userEntity.setEmail(userDto.getEmail());
-        userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
+        userEntity.setNonBlocked(userDto.getNonBlocked());
+        String dtoPassword = userDto.getPassword();
+        if (dtoPassword != null) {
+            userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
+        }
+        if (userDto.getRolesNames() != null) {
+            userEntity.setRoles(userDto.getRolesNames().stream()
+                    .map(roleService::findByName).collect(Collectors.toList()));
+        }
         UserEntity storedUserDetails = userRepository.save(userEntity);
+
+
         return UserMapper.INSTANCE.entityToDto(storedUserDetails);
     }
 
@@ -127,7 +140,7 @@ public class UserServiceImpl implements UserService {
         if (userEntity == null) {
             throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
         }
-        userEntity.setActive(false);
+        userEntity.setDeleted(true);
         userRepository.save(userEntity);
     }
 

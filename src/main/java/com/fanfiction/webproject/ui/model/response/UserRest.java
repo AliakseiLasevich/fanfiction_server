@@ -12,7 +12,8 @@ public class UserRest {
     private String firstName;
     private String lastName;
     private String email;
-    private Boolean active;
+    private Boolean nonBlocked;
     private Collection<RoleEntity> roles;
+
 
 }

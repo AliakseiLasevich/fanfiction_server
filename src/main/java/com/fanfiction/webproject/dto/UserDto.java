@@ -18,6 +18,8 @@ public class UserDto implements Serializable {
     private String encryptedPassword;
     private String emailVerificationToken;
     private Boolean emailVerificationStatus = false;
-    private Boolean active;
+    private Boolean nonBlocked;
+    private Boolean deleted;
     private Collection<RoleEntity> roles;
+    private Collection<String> rolesNames;
 }

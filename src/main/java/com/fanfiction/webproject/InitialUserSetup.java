@@ -54,11 +54,13 @@ public class InitialUserSetup {
         UserEntity adminuser = new UserEntity();
         adminuser.setFirstName("Admin");
         adminuser.setLastName("Admin");
-        adminuser.setEmail("admin@admin.com");
+        adminuser.setEmail("admin1@admin.com");
         adminuser.setEmailVerificationStatus(true);
         adminuser.setUserId(utils.generateRandomString(30));
         adminuser.setEncryptedPassword(bCryptPasswordEncoder.encode("123"));
         adminuser.setRoles(Arrays.asList(roleAdmin, roleUser));
+        adminuser.setNonBlocked(true);
+        adminuser.setDeleted(false);
 //        userRepository.save(adminuser);
     }
 

@@ -56,11 +56,11 @@ public class UserController {
 
     @PutMapping(path = "/{id}",
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserRest updateUser(@PathVariable String id, @RequestBody UserDetailsRequestModel userDetails) {
-        if (userDetails.getEmail() == null || userDetails.getPassword() == null) {
+    public UserRest updateUser(@PathVariable String id, @RequestBody UserDetailsRequestModel user) {
+        if (user.getEmail() == null) {
             throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
         }
-        UserDto userDto = UserMapper.INSTANCE.requestModelToDto(userDetails);
+        UserDto userDto = UserMapper.INSTANCE.requestModelToDto(user);
         userDto.setUserId(id);
         UserDto updatedUser = userService.updateUser(userDto);
         return UserMapper.INSTANCE.dtoToRest(updatedUser);

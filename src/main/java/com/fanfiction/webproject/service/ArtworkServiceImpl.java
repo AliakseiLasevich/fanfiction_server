@@ -2,11 +2,14 @@ package com.fanfiction.webproject.service;
 
 import com.fanfiction.webproject.dto.ArtworkDto;
 import com.fanfiction.webproject.entity.Artwork;
+import com.fanfiction.webproject.entity.Tag;
 import com.fanfiction.webproject.entity.UserEntity;
 import com.fanfiction.webproject.exceptions.ArtworkServiceException;
 import com.fanfiction.webproject.mappers.ArtworkMapper;
 import com.fanfiction.webproject.repository.ArtworkRepository;
 import com.fanfiction.webproject.service.interfaces.ArtworkService;
+import com.fanfiction.webproject.service.interfaces.GenreService;
+import com.fanfiction.webproject.service.interfaces.TagService;
 import com.fanfiction.webproject.service.interfaces.UserService;
 import com.fanfiction.webproject.ui.model.response.ErrorMessages;
 import com.fanfiction.webproject.utils.Utils;
@@ -24,12 +27,16 @@ public class ArtworkServiceImpl implements ArtworkService {
 
     private ArtworkRepository artworkRepository;
     private UserService userService;
+    private TagService tagService;
+    private GenreService genreService;
     private final Utils utils;
 
     @Autowired
-    public ArtworkServiceImpl(ArtworkRepository artworkRepository, UserService userService, Utils utils) {
+    public ArtworkServiceImpl(ArtworkRepository artworkRepository, UserService userService, Utils utils, TagService tagService, GenreService genreService) {
         this.artworkRepository = artworkRepository;
         this.userService = userService;
+        this.tagService = tagService;
+        this.genreService = genreService;
         this.utils = utils;
     }
 
@@ -73,8 +80,10 @@ public class ArtworkServiceImpl implements ArtworkService {
         Artwork artwork = ArtworkMapper.INSTANCE.dtoToEntity(artworkDto);
         artwork.setUser(userService.getUserEntityByUserId(artworkDto.getUserId()));
         artwork.setArtworkId(utils.generateRandomString(30));
+        artwork.setGenre(genreService.findOrSave(artworkDto.getGenre().getName()));
+        List<Tag> tags = artworkDto.getTags().stream().map(tag -> tagService.findOrSave(tag.getName())).collect(Collectors.toList());
+        artwork.setTags(tags);
         Artwork storedArtwork = artworkRepository.save(artwork);
         return ArtworkMapper.INSTANCE.entityToDto(storedArtwork);
-
     }
 }

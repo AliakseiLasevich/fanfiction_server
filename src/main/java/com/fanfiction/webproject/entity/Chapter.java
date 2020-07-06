@@ -17,7 +17,7 @@ public class Chapter implements Serializable {
     private int chapterNumber;
 
     @Column(nullable = false)
-    private String name;
+    private String title;
 
     @Column(nullable = false)
     private String content;

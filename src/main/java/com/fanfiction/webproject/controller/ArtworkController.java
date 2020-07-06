@@ -51,10 +51,12 @@ public class ArtworkController {
     public ArtworkRest createArtwork(@RequestBody ArtworkRequestModel artworkRequestModel,
                                      @PathVariable String userId) {
         if (!ObjectUtils.allNotNull(
+                artworkRequestModel.getName(),
+                artworkRequestModel.getSummary(),
                 artworkRequestModel.getChapters(),
                 artworkRequestModel.getGenre(),
-                artworkRequestModel.getSummary(),
-                artworkRequestModel.getTags())) {
+                artworkRequestModel.getTags()
+        )) {
             throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
         }
         ArtworkDto artworkDto = ArtworkMapper.INSTANCE.requestModelToDto(artworkRequestModel);
@@ -62,5 +64,6 @@ public class ArtworkController {
         ArtworkDto createdArtwork = artworkService.createArtwork(artworkDto);
         return ArtworkMapper.INSTANCE.dtoToRest(createdArtwork);
     }
+
 
 }

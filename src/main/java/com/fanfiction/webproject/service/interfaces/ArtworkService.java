@@ -15,4 +15,6 @@ public interface ArtworkService {
     ArtworkDto createArtwork(ArtworkDto artworkDto);
 
     ArtworkPreviewPageDto getArtworksPreviewPage(int page, int limit);
+
+    ArtworkPreviewPageDto getArtworksPreviewPageByUserId(String userId, int page, int limit);
 }

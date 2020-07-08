@@ -5,6 +5,7 @@ import lombok.Data;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -28,7 +29,7 @@ public class Artwork implements Serializable {
     private Boolean active = true;
 
     @Column(nullable = false)
-    private LocalDate  creationDate;
+    private LocalDateTime creationDate;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<Chapter> chapters;

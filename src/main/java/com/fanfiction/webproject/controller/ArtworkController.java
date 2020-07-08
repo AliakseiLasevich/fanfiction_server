@@ -32,13 +32,7 @@ public class ArtworkController {
     }
 
 
-    @GetMapping(path = "/users/{userId}/artworks/")
-    public List<ArtworkRest> getArtworksByUserId(@PathVariable String userId) {
-        List<ArtworkDto> artworkDtos = artworkService.findByUserId(userId);
-        return artworkDtos.stream()
-                .map(ArtworkMapper.INSTANCE::dtoToArtworkRest)
-                .collect(Collectors.toList());
-    }
+
 
     @PostMapping(path = "/users/{userId}/artworks", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)

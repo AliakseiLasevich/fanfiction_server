@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -80,6 +81,27 @@ public class ArtworkServiceImpl implements ArtworkService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public ArtworkPreviewPageDto getArtworksPreviewPageByUserId(String userId, int page, int limit) {
+        UserEntity userEntity = userService.getUserEntityByUserId(userId);
+        if (userEntity == null) {
+            throw new ArtworkServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
+        }
+
+        if (page > 0) {
+            page = page - 1;
+        }
+
+        Pageable pageableRequest = PageRequest.of(page, limit);
+        Page<Artwork> artworkPage = artworkRepository.findByUserIdOrderByCreationDate(userEntity.getId(), pageableRequest);
+        List<Artwork> artworkEntities = artworkPage.getContent();
+        List<ArtworkDto> currentPage = artworkEntities.stream()
+                .map(ArtworkMapper.INSTANCE::entityToDto)
+                .collect(Collectors.toList());
+
+        return new ArtworkPreviewPageDto(currentPage, artworkPage.getTotalPages());
+    }
+
     @Transactional
     @Override
     public ArtworkDto createArtwork(ArtworkDto artworkDto) {
@@ -89,7 +111,7 @@ public class ArtworkServiceImpl implements ArtworkService {
         artwork.setGenre(genreService.findOrSave(artworkDto.getGenre().getName()));
         List<Tag> tags = artworkDto.getTags().stream().map(tag -> tagService.findOrSave(tag.getName())).collect(Collectors.toList());
         artwork.setTags(tags);
-        artwork.setCreationDate(LocalDate.now());
+        artwork.setCreationDate(LocalDateTime.now());
         Artwork storedArtwork = artworkRepository.save(artwork);
         return ArtworkMapper.INSTANCE.entityToDto(storedArtwork);
     }
@@ -99,8 +121,8 @@ public class ArtworkServiceImpl implements ArtworkService {
         if (page > 0) {
             page = page - 1;
         }
-        Pageable pageableRequest = PageRequest.of(page, limit, Sort.by("creationDate").ascending());
-        Page<Artwork> artworkPage = artworkRepository.findAll(pageableRequest);
+        Pageable pageableRequest = PageRequest.of(page, limit);
+        Page<Artwork> artworkPage = artworkRepository.findAllByOrderByCreationDateDesc(pageableRequest);
         List<Artwork> artworkEntities = artworkPage.getContent();
         List<ArtworkDto> currentPage = artworkEntities.stream()
                 .map(ArtworkMapper.INSTANCE::entityToDto)

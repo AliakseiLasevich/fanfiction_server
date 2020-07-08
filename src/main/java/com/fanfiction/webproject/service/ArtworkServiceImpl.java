@@ -1,6 +1,7 @@
 package com.fanfiction.webproject.service;
 
 import com.fanfiction.webproject.dto.ArtworkDto;
+import com.fanfiction.webproject.dto.ArtworkPreviewPageDto;
 import com.fanfiction.webproject.entity.Artwork;
 import com.fanfiction.webproject.entity.Tag;
 import com.fanfiction.webproject.entity.UserEntity;
@@ -15,9 +16,14 @@ import com.fanfiction.webproject.ui.model.response.ErrorMessages;
 import com.fanfiction.webproject.utils.Utils;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -83,7 +89,22 @@ public class ArtworkServiceImpl implements ArtworkService {
         artwork.setGenre(genreService.findOrSave(artworkDto.getGenre().getName()));
         List<Tag> tags = artworkDto.getTags().stream().map(tag -> tagService.findOrSave(tag.getName())).collect(Collectors.toList());
         artwork.setTags(tags);
+        artwork.setCreationDate(LocalDate.now());
         Artwork storedArtwork = artworkRepository.save(artwork);
         return ArtworkMapper.INSTANCE.entityToDto(storedArtwork);
+    }
+
+    @Override
+    public ArtworkPreviewPageDto getArtworksPreviewPage(int page, int limit) {
+        if (page > 0) {
+            page = page - 1;
+        }
+        Pageable pageableRequest = PageRequest.of(page, limit, Sort.by("creationDate").ascending());
+        Page<Artwork> artworkPage = artworkRepository.findAll(pageableRequest);
+        List<Artwork> artworkEntities = artworkPage.getContent();
+        List<ArtworkDto> currentPage = artworkEntities.stream()
+                .map(ArtworkMapper.INSTANCE::entityToDto)
+                .collect(Collectors.toList());
+        return new ArtworkPreviewPageDto(currentPage, artworkPage.getTotalPages());
     }
 }

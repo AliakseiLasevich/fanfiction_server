@@ -12,14 +12,12 @@ public class ArtworkDto {
 
     private String userId;
     private String artworkId;
-
+    private String authorName;
+    private String authorId;
     private String name;
     private String summary;
-
     private Genre genre;
-
     private List<Chapter> chapters;
-
     private List<Tag> tags;
 
 }

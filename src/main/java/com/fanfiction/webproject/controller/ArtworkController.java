@@ -1,10 +1,12 @@
 package com.fanfiction.webproject.controller;
 
 import com.fanfiction.webproject.dto.ArtworkDto;
+import com.fanfiction.webproject.dto.ArtworkPreviewPageDto;
 import com.fanfiction.webproject.exceptions.UserServiceException;
 import com.fanfiction.webproject.mappers.ArtworkMapper;
 import com.fanfiction.webproject.service.interfaces.ArtworkService;
 import com.fanfiction.webproject.ui.model.request.ArtworkRequestModel;
+import com.fanfiction.webproject.ui.model.response.ArtworkPreviewRest;
 import com.fanfiction.webproject.ui.model.response.ArtworkRest;
 import com.fanfiction.webproject.ui.model.response.ErrorMessages;
 import org.apache.commons.lang3.ObjectUtils;
@@ -22,18 +24,11 @@ public class ArtworkController {
     @Autowired
     private ArtworkService artworkService;
 
-    @GetMapping("/artworks")
-    public List<ArtworkRest> findAllArtworks() {
-        List<ArtworkDto> artworkDtos = artworkService.findAll();
-        return artworkDtos.stream()
-                .map(ArtworkMapper.INSTANCE::dtoToRest)
-                .collect(Collectors.toList());
-    }
 
     @GetMapping(path = "/artworks/{artworkId}")
     public ArtworkRest getArtworkById(@PathVariable String artworkId) {
         ArtworkDto artworkDto = artworkService.findById(artworkId);
-        return ArtworkMapper.INSTANCE.dtoToRest(artworkDto);
+        return ArtworkMapper.INSTANCE.dtoToArtworkRest(artworkDto);
     }
 
 
@@ -41,7 +36,7 @@ public class ArtworkController {
     public List<ArtworkRest> getArtworksByUserId(@PathVariable String userId) {
         List<ArtworkDto> artworkDtos = artworkService.findByUserId(userId);
         return artworkDtos.stream()
-                .map(ArtworkMapper.INSTANCE::dtoToRest)
+                .map(ArtworkMapper.INSTANCE::dtoToArtworkRest)
                 .collect(Collectors.toList());
     }
 
@@ -62,8 +57,7 @@ public class ArtworkController {
         ArtworkDto artworkDto = ArtworkMapper.INSTANCE.requestModelToDto(artworkRequestModel);
         artworkDto.setUserId(userId);
         ArtworkDto createdArtwork = artworkService.createArtwork(artworkDto);
-        return ArtworkMapper.INSTANCE.dtoToRest(createdArtwork);
+        return ArtworkMapper.INSTANCE.dtoToArtworkRest(createdArtwork);
     }
-
 
 }

@@ -13,7 +13,7 @@ public class Chapter implements Serializable {
     @GeneratedValue
     private long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 10000)
     private int chapterNumber;
 
     @Column(nullable = false)

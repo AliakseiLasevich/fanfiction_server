@@ -40,16 +40,20 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, SecurityConstants.SIGN_UP_URL)
-                .permitAll()
+                    .permitAll()
                 .antMatchers(HttpMethod.GET, SecurityConstants.VERIFICATION_EMAIL_URL)
-                .permitAll()
+                    .permitAll()
+                .antMatchers("/artworks/**")
+                    .permitAll()
+                .antMatchers("/artworksPreviews/**")
+                    .permitAll()
                 .anyRequest()
-                .authenticated()
+                    .authenticated()
                 .and()
-                .addFilter(getAuthenticationFilter())
-                .addFilter(new AuthorizationFilter(authenticationManager(), userRepository))
+                    .addFilter(getAuthenticationFilter())
+                    .addFilter(new AuthorizationFilter(authenticationManager(), userRepository))
                 .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         ;
     }
 

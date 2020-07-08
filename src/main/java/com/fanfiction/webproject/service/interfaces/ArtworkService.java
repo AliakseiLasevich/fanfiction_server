@@ -1,6 +1,7 @@
 package com.fanfiction.webproject.service.interfaces;
 
 import com.fanfiction.webproject.dto.ArtworkDto;
+import com.fanfiction.webproject.dto.ArtworkPreviewPageDto;
 
 import java.util.List;
 
@@ -12,4 +13,6 @@ public interface ArtworkService {
     List<ArtworkDto> findByUserId(String userId);
 
     ArtworkDto createArtwork(ArtworkDto artworkDto);
+
+    ArtworkPreviewPageDto getArtworksPreviewPage(int page, int limit);
 }

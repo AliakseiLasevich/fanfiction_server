@@ -11,6 +11,7 @@ import java.util.List;
 public class ArtworkRest {
 
     private String artworkId;
+    private String name;
     private String summary;
     private List<Chapter> chapters;
     private List<Tag> tags;

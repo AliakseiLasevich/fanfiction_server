@@ -2,12 +2,10 @@ package com.fanfiction.webproject.controller;
 
 import com.fanfiction.webproject.dto.ArtworkDto;
 import com.fanfiction.webproject.dto.ArtworkPreviewPageDto;
-import com.fanfiction.webproject.mappers.ArtworkMapper;
 import com.fanfiction.webproject.mappers.ArtworkPreviewMapper;
 import com.fanfiction.webproject.service.interfaces.ArtworkService;
 import com.fanfiction.webproject.ui.model.response.ArtworkPreviewPageRest;
 import com.fanfiction.webproject.ui.model.response.ArtworkPreviewRest;
-import com.fanfiction.webproject.ui.model.response.ArtworkRest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;

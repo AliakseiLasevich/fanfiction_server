@@ -1,12 +1,10 @@
 package com.fanfiction.webproject.controller;
 
 import com.fanfiction.webproject.dto.ArtworkDto;
-import com.fanfiction.webproject.dto.ArtworkPreviewPageDto;
 import com.fanfiction.webproject.exceptions.UserServiceException;
 import com.fanfiction.webproject.mappers.ArtworkMapper;
 import com.fanfiction.webproject.service.interfaces.ArtworkService;
 import com.fanfiction.webproject.ui.model.request.ArtworkRequestModel;
-import com.fanfiction.webproject.ui.model.response.ArtworkPreviewRest;
 import com.fanfiction.webproject.ui.model.response.ArtworkRest;
 import com.fanfiction.webproject.ui.model.response.ErrorMessages;
 import org.apache.commons.lang3.ObjectUtils;
@@ -14,9 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 public class ArtworkController {

@@ -9,6 +9,7 @@ import java.util.Collection;
 public class UserRest {
 
     private String userId;
+    private String nickName;
     private String firstName;
     private String lastName;
     private String email;

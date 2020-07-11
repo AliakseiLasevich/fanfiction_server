@@ -20,7 +20,7 @@ public interface ArtworkMapper {
     Artwork dtoToEntity(ArtworkDto artworkDto);
 
     @Mapping(source = "user.userId", target = "authorId")
-    @Mapping(source = "user.firstName", target = "authorName")
+    @Mapping(source = "user.nickName", target = "authorName")
     ArtworkDto entityToDto(Artwork artwork);
 
     ArtworkRest dtoToArtworkRest(ArtworkDto artworkDto);
@@ -37,7 +37,6 @@ public interface ArtworkMapper {
     @Mapping(source = "tag", target = "name")
     Genre genreStringToEntity(String tag);
 
-//    @Mapping(source = "", target = "")
     ArtworkPreviewRest dtoToArtworkCardRest(ArtworkDto artworkDto);
 
     ArtworkMapper INSTANCE = Mappers.getMapper(ArtworkMapper.class);

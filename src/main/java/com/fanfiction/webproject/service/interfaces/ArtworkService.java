@@ -2,6 +2,7 @@ package com.fanfiction.webproject.service.interfaces;
 
 import com.fanfiction.webproject.dto.ArtworkDto;
 import com.fanfiction.webproject.dto.ArtworkPreviewPageDto;
+import com.fanfiction.webproject.entity.Artwork;
 
 import java.util.List;
 
@@ -17,4 +18,6 @@ public interface ArtworkService {
     ArtworkPreviewPageDto getArtworksPreviewPage(int page, int limit);
 
     ArtworkPreviewPageDto getArtworksPreviewPageByUserId(String userId, int page, int limit);
+
+    Artwork findArtworkEntityByArtworkId(String artworkId);
 }

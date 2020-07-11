@@ -129,4 +129,9 @@ public class ArtworkServiceImpl implements ArtworkService {
                 .collect(Collectors.toList());
         return new ArtworkPreviewPageDto(currentPage, artworkPage.getTotalPages());
     }
+
+    @Override
+    public Artwork findArtworkEntityByArtworkId(String artworkId) {
+        return artworkRepository.findByArtworkId(artworkId);
+    }
 }

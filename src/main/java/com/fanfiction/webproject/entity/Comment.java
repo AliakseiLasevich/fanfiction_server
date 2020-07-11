@@ -1,10 +1,10 @@
 package com.fanfiction.webproject.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Data
@@ -14,16 +14,19 @@ public class Comment {
     @GeneratedValue
     private long id;
 
-    @Column(name = "comment")
-    private String comment;
+    @Column(name = "content")
+    private String content;
 
     @Column(name = "date")
-    private LocalDateTime date;
+    private LocalDateTime publicationDate;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "artworkId")
     private Artwork artwork;
 
-    @ManyToMany(mappedBy = "comments")
-    private List<UserEntity> userEntities;
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "userId")
+    private UserEntity userEntity;
 }

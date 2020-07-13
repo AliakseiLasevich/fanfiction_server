@@ -2,9 +2,7 @@ package com.fanfiction.webproject.service;
 
 import com.fanfiction.webproject.dto.ArtworkDto;
 import com.fanfiction.webproject.dto.ArtworkPreviewPageDto;
-import com.fanfiction.webproject.entity.Artwork;
-import com.fanfiction.webproject.entity.Tag;
-import com.fanfiction.webproject.entity.UserEntity;
+import com.fanfiction.webproject.entity.*;
 import com.fanfiction.webproject.exceptions.ArtworkServiceException;
 import com.fanfiction.webproject.mappers.ArtworkMapper;
 import com.fanfiction.webproject.repository.ArtworkRepository;
@@ -19,11 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -133,5 +129,15 @@ public class ArtworkServiceImpl implements ArtworkService {
     @Override
     public Artwork findArtworkEntityByArtworkId(String artworkId) {
         return artworkRepository.findByArtworkId(artworkId);
+    }
+
+    @Override
+    public ArtworkDto findByComment(Comment comment) {
+        return ArtworkMapper.INSTANCE.entityToDto(artworkRepository.findByCommentsContains(comment));
+    }
+
+    @Override
+    public ArtworkDto findByChapter(Chapter chapter) {
+        return ArtworkMapper.INSTANCE.entityToDto(artworkRepository.findByChaptersContains(chapter));
     }
 }

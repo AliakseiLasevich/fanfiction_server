@@ -4,7 +4,6 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -43,4 +42,7 @@ public class Artwork implements Serializable {
     @ManyToOne
     @JoinColumn(name = "userId")
     private UserEntity user;
+
+    @OneToMany(mappedBy = "artwork")
+    private List<Comment> comments;
 }

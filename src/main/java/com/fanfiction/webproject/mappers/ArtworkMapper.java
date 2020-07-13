@@ -37,7 +37,7 @@ public interface ArtworkMapper {
     @Mapping(source = "tag", target = "name")
     Genre genreStringToEntity(String tag);
 
-    ArtworkPreviewRest dtoToArtworkCardRest(ArtworkDto artworkDto);
+    ArtworkPreviewRest dtoToArtworkPreviewRest(ArtworkDto artworkDto);
 
     ArtworkMapper INSTANCE = Mappers.getMapper(ArtworkMapper.class);
 }

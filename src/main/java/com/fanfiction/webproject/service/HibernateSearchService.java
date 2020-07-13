@@ -32,49 +32,54 @@ public class HibernateSearchService {
     @Transactional
     public List<ArtworkDto> fuzzySearch(String searchTerm) throws InterruptedException {
         FullTextEntityManager fullTextEntityManager = org.hibernate.search.jpa.Search.getFullTextEntityManager(entityManager);
-
-        QueryBuilder commentQueryBuilder = fullTextEntityManager.getSearchFactory().buildQueryBuilder().forEntity(Comment.class).get();
-        QueryBuilder chapterQueryBuilder = fullTextEntityManager.getSearchFactory().buildQueryBuilder().forEntity(Chapter.class).get();
-
-        Query commentQuery = commentQueryBuilder
-                .keyword()
-                .onFields("content")
-                .matching(searchTerm)
-                .createQuery();
-
-        Query chapterQuery = chapterQueryBuilder
-                .keyword()
-                .onFields("content")
-                .matching(searchTerm)
-                .createQuery();
-
-
-        // wrap Lucene query in a javax.persistence.Query
-        javax.persistence.Query commentsPersistenceQuery =
-                fullTextEntityManager.createFullTextQuery(commentQuery, Comment.class);
-
-        javax.persistence.Query chapterPersistenceQuery =
-                fullTextEntityManager.createFullTextQuery(commentQuery, Chapter.class);
-
-// execute search
-        List<Comment> commentsResult = commentsPersistenceQuery.getResultList();
-        List<Chapter> chaptersResult = chapterPersistenceQuery.getResultList();
-
-
-        List<ArtworkDto> artworksByComments = commentsResult.stream()
-                .map(comment -> artworkService.findByComment(comment))
-                .distinct()
-                .collect(Collectors.toList());
-
-        List<ArtworkDto> artworksByChapters = chaptersResult.stream()
-                .map(chapter -> artworkService.findByChapter(chapter))
-                .distinct()
-                .collect(Collectors.toList());
-
+        List<ArtworkDto> artworksByComments = searchArtworkDtosByComments(searchTerm, fullTextEntityManager);
+        List<ArtworkDto> artworksByChapters = searchArtworkDtosByChaptersContent(searchTerm, fullTextEntityManager);
         return ListUtils.union(artworksByComments, artworksByChapters).stream()
                 .distinct()
                 .collect(Collectors.toList());
 
+    }
+
+    public List<ArtworkDto> searchArtworkDtosByChaptersContent(String searchTerm, FullTextEntityManager fullTextEntityManager) {
+        List<Chapter> chaptersResult = getChaptersBySearchTerm(searchTerm, fullTextEntityManager);
+        return chaptersResult.stream()
+                .map(chapter -> artworkService.findByChapter(chapter))
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    public List<ArtworkDto> searchArtworkDtosByComments(String searchTerm, FullTextEntityManager fullTextEntityManager) {
+        List<Comment> commentsResult = getCommentsBySearchTerm(searchTerm, fullTextEntityManager);
+        return commentsResult.stream()
+                .map(comment -> artworkService.findByComment(comment))
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    public List<Comment> getCommentsBySearchTerm(String searchTerm, FullTextEntityManager fullTextEntityManager) {
+        QueryBuilder commentQueryBuilder = fullTextEntityManager.getSearchFactory().buildQueryBuilder().forEntity(Comment.class).get();
+        Query commentQuery = getQuery(searchTerm, commentQueryBuilder, "content");
+        javax.persistence.Query commentsPersistenceQuery = getPersistenceQuery(fullTextEntityManager, commentQuery, Comment.class);
+        return (List<Comment>) commentsPersistenceQuery.getResultList();
+    }
+
+    public List<Chapter> getChaptersBySearchTerm(String searchTerm, FullTextEntityManager fullTextEntityManager) {
+        QueryBuilder chapterQueryBuilder = fullTextEntityManager.getSearchFactory().buildQueryBuilder().forEntity(Chapter.class).get();
+        Query chapterQuery = getQuery(searchTerm, chapterQueryBuilder, "content");
+        javax.persistence.Query chapterPersistenceQuery = getPersistenceQuery(fullTextEntityManager, chapterQuery, Chapter.class);
+        return (List<Chapter>) chapterPersistenceQuery.getResultList();
+    }
+
+    public javax.persistence.Query getPersistenceQuery(FullTextEntityManager fullTextEntityManager, Query searchQuery, Class clazz) {
+        return fullTextEntityManager.createFullTextQuery(searchQuery, clazz);
+    }
+
+    public Query getQuery(String searchTerm, QueryBuilder queryBuilder, String field) {
+        return queryBuilder
+                .keyword()
+                .onFields(field)
+                .matching(searchTerm)
+                .createQuery();
     }
 
 

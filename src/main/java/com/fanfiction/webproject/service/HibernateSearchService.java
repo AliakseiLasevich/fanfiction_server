@@ -30,17 +30,17 @@ public class HibernateSearchService {
     }
 
     @Transactional
-    public List<ArtworkDto> fuzzySearch(String searchTerm) throws InterruptedException {
+    public List<ArtworkDto> fuzzySearch(String searchTerm)  {
         FullTextEntityManager fullTextEntityManager = org.hibernate.search.jpa.Search.getFullTextEntityManager(entityManager);
-        List<ArtworkDto> artworksByComments = searchArtworkDtosByComments(searchTerm, fullTextEntityManager);
-        List<ArtworkDto> artworksByChapters = searchArtworkDtosByChaptersContent(searchTerm, fullTextEntityManager);
+        List<ArtworkDto> artworksByComments = searchDistinctArtworkDtosByComments(searchTerm, fullTextEntityManager);
+        List<ArtworkDto> artworksByChapters = searchDistinctArtworkDtosByChaptersContent(searchTerm, fullTextEntityManager);
         return ListUtils.union(artworksByComments, artworksByChapters).stream()
                 .distinct()
                 .collect(Collectors.toList());
 
     }
 
-    public List<ArtworkDto> searchArtworkDtosByChaptersContent(String searchTerm, FullTextEntityManager fullTextEntityManager) {
+    public List<ArtworkDto> searchDistinctArtworkDtosByChaptersContent(String searchTerm, FullTextEntityManager fullTextEntityManager) {
         List<Chapter> chaptersResult = getChaptersBySearchTerm(searchTerm, fullTextEntityManager);
         return chaptersResult.stream()
                 .map(chapter -> artworkService.findByChapter(chapter))
@@ -48,7 +48,7 @@ public class HibernateSearchService {
                 .collect(Collectors.toList());
     }
 
-    public List<ArtworkDto> searchArtworkDtosByComments(String searchTerm, FullTextEntityManager fullTextEntityManager) {
+    public List<ArtworkDto> searchDistinctArtworkDtosByComments(String searchTerm, FullTextEntityManager fullTextEntityManager) {
         List<Comment> commentsResult = getCommentsBySearchTerm(searchTerm, fullTextEntityManager);
         return commentsResult.stream()
                 .map(comment -> artworkService.findByComment(comment))
@@ -77,7 +77,7 @@ public class HibernateSearchService {
     public Query getQuery(String searchTerm, QueryBuilder queryBuilder, String field) {
         return queryBuilder
                 .keyword()
-                .onFields(field)
+                .onField(field)
                 .matching(searchTerm)
                 .createQuery();
     }

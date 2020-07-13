@@ -20,7 +20,7 @@ public class UserDto implements Serializable {
     private String emailVerificationToken;
     private Boolean emailVerificationStatus = false;
     private Boolean nonBlocked;
-    private Boolean deleted;
+    private Boolean deleted = false;
     private Collection<RoleEntity> roles;
     private Collection<String> rolesNames;
 }

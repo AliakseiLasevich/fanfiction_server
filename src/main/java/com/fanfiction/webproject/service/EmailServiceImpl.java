@@ -23,7 +23,7 @@ public class EmailServiceImpl implements EmailService {
 
     private final SimpleMailMessage constructEmailMessage(final String recipientEmail, final String token,  final String domainUrl) {
         final String subject = "Registration Confirmation";
-        final String confirmationUrl = domainUrl + "/users/email-verification?token=" + token;
+        final String confirmationUrl = domainUrl + "/email-verification/" + token;
         final SimpleMailMessage email = new SimpleMailMessage();
         email.setTo(recipientEmail);
         email.setSubject(subject);
@@ -35,8 +35,8 @@ public class EmailServiceImpl implements EmailService {
         return  new StringBuilder().append(request.getScheme())
                 .append("://")
                 .append(request.getServerName())
-                .append(":")
-                .append(request.getServerPort())
+                .append(":3000")
+//                .append(request.getServerPort())
                 .append(request.getContextPath())
                 .toString();
     }

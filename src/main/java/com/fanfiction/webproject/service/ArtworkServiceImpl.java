@@ -109,6 +109,7 @@ public class ArtworkServiceImpl implements ArtworkService {
         artwork.setTags(tags);
         artwork.setCreationDate(LocalDateTime.now());
         Artwork storedArtwork = artworkRepository.save(artwork);
+
         return ArtworkMapper.INSTANCE.entityToDto(storedArtwork);
     }
 

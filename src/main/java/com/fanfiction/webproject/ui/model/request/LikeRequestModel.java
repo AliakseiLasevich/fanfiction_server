@@ -1,0 +1,8 @@
+package com.fanfiction.webproject.ui.model.request;
+
+import lombok.Data;
+
+@Data
+public class LikeRequestModel {
+    private boolean like;
+}

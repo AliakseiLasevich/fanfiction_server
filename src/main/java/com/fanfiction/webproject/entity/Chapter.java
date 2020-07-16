@@ -1,13 +1,11 @@
 package com.fanfiction.webproject.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
@@ -19,7 +17,7 @@ public class Chapter implements Serializable {
     @GeneratedValue
     private long id;
 
-    @Column(nullable = false, length = 10000)
+    @Column(nullable = false)
     private int chapterNumber;
 
     @Column(nullable = false)
@@ -31,4 +29,9 @@ public class Chapter implements Serializable {
 
     @Column(nullable = true)
     private String imageUrl;
+
+    @JsonIgnore
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinColumn(name = "artwork_id")
+    private Artwork artwork;
 }

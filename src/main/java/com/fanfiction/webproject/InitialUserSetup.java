@@ -54,7 +54,8 @@ public class InitialUserSetup {
         UserEntity adminuser = new UserEntity();
         adminuser.setFirstName("Admin");
         adminuser.setLastName("Admin");
-        adminuser.setEmail("admin1@admin.com");
+        adminuser.setNickName("Super-Admin-8000");
+        adminuser.setEmail("admin@admin.com");
         adminuser.setEmailVerificationStatus(true);
         adminuser.setUserId(utils.generateRandomString(30));
         adminuser.setEncryptedPassword(bCryptPasswordEncoder.encode("123"));

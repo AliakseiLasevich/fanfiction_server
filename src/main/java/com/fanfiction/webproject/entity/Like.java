@@ -7,12 +7,19 @@ import java.io.Serializable;
 
 @Entity
 @Data
-public class Tag implements Serializable {
+@Table(name="likes")
+public class Like implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(nullable = false)
-    private String name;
+    @OneToOne
+    private Chapter chapter;
+
+    @OneToOne
+    private UserEntity userEntity;
+
+    @Column(name = "value")
+    private boolean value;
 }

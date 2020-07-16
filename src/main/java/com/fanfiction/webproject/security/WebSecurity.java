@@ -45,8 +45,6 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .antMatchers("/artworksPreviews/**") .permitAll()
                 .antMatchers("/handler/**").permitAll()
                 .antMatchers("/search/**").permitAll()
-                .antMatchers("/users/email-verification/**").permitAll()
-
                 .anyRequest() .authenticated()
                 .and()
                     .addFilter(getAuthenticationFilter())

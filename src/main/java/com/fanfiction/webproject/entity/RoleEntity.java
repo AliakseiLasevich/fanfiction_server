@@ -15,7 +15,7 @@ import java.util.Collection;
 public class RoleEntity implements Serializable {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(nullable = false, length = 25)

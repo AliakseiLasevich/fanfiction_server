@@ -8,6 +8,8 @@ import com.fanfiction.webproject.ui.model.response.ErrorMessages;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ChapterServiceImpl implements ChapterService {
 
@@ -21,5 +23,10 @@ public class ChapterServiceImpl implements ChapterService {
             throw new ChapterServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
         }
         return returnValue;
+    }
+
+    @Override
+    public List<Chapter> getByArtworkId(String artworkId) {
+        return chapterRepository.findChapterByArtworkArtworkId(artworkId);
     }
 }

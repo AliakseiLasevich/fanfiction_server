@@ -61,7 +61,6 @@ public class ArtworkServiceImpl implements ArtworkService {
         if (artwork == null) {
             throw new ArtworkServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
         }
-
         return ArtworkMapper.INSTANCE.entityToDto(artwork);
     }
 

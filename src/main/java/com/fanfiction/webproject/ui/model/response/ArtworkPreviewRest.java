@@ -2,6 +2,8 @@ package com.fanfiction.webproject.ui.model.response;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 public class ArtworkPreviewRest {
 
@@ -10,4 +12,5 @@ public class ArtworkPreviewRest {
     private String authorId;
     private String name;
     private String summary;
+    private LocalDateTime creationDate;
 }

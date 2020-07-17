@@ -5,6 +5,7 @@ import com.fanfiction.webproject.entity.Genre;
 import com.fanfiction.webproject.entity.Tag;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -19,5 +20,6 @@ public class ArtworkDto {
     private Genre genre;
     private List<Chapter> chapters;
     private List<Tag> tags;
+    private LocalDateTime creationDate;
 
 }

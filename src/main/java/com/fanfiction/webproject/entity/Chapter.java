@@ -7,6 +7,7 @@ import org.hibernate.search.annotations.Indexed;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Data
@@ -34,4 +35,5 @@ public class Chapter implements Serializable {
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "artwork_id")
     private Artwork artwork;
+
 }

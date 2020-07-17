@@ -11,6 +11,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,23 +23,24 @@ public class RatingController {
 
     @GetMapping(path = "/{artworkId}",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    private RatingRest getArtworkAverageRating(@PathVariable String artworkId) {
+    public RatingRest getArtworkAverageRating(@PathVariable String artworkId) {
         RatingDto ratingDto = ratingService.getAverageRating(artworkId);
         return RatingMapper.INSTANCE.dtoToRest(ratingDto);
     }
 
     @GetMapping(path = "/{artworkId}/{userId}",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    private RatingRest getUserArtworkRating(@PathVariable String userId,
+    public RatingRest getUserArtworkRating(@PathVariable String userId,
                                             @PathVariable String artworkId) {
         RatingDto ratingDto = ratingService.getRatingBy(userId, artworkId);
         return RatingMapper.INSTANCE.dtoToRest(ratingDto);
     }
 
+    @PreAuthorize("#userId == principal.userId")
     @PostMapping(path = "/{artworkId}/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    private RatingRest createArtwork(
+    public RatingRest createArtwork(
             @RequestBody RatingRequestModel requestModel,
             @PathVariable String userId,
             @PathVariable String artworkId) {

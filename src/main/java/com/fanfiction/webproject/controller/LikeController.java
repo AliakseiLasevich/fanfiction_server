@@ -41,17 +41,11 @@ public class LikeController {
                              @PathVariable String userId,
                              @PathVariable String artworkId,
                              @PathVariable int chapterNumber) {
-        if (!ObjectUtils.allNotNull(
-                requestModel,
-                userId,
-                artworkId,
-                chapterNumber
-        )) {
-            throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
-        }
+        validateLikeRequestModel(requestModel, userId, artworkId, chapterNumber);
         LikeDto likeDto = likeService.create(userId, artworkId, chapterNumber, requestModel.isLike());
         return LikeMapper.INSTANCE.dtoToRest(likeDto);
     }
+
 
     @PreAuthorize("#userId == principal.userId")
     @PutMapping(path = "/{userId}/{artworkId}/{chapterNumber}", consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -61,6 +55,15 @@ public class LikeController {
                             @PathVariable String userId,
                             @PathVariable String artworkId,
                             @PathVariable int chapterNumber) {
+        validateLikeRequestModel(requestModel, userId, artworkId, chapterNumber);
+        LikeDto likeDto = likeService.update(userId, artworkId, chapterNumber, requestModel.isLike());
+        return LikeMapper.INSTANCE.dtoToRest(likeDto);
+    }
+
+    private void validateLikeRequestModel(LikeRequestModel requestModel,
+                                          String userId,
+                                          String artworkId,
+                                          int chapterNumber) {
         if (!ObjectUtils.allNotNull(
                 requestModel,
                 userId,
@@ -69,7 +72,5 @@ public class LikeController {
         )) {
             throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
         }
-        LikeDto likeDto = likeService.update(userId, artworkId, chapterNumber, requestModel.isLike());
-        return LikeMapper.INSTANCE.dtoToRest(likeDto);
     }
 }

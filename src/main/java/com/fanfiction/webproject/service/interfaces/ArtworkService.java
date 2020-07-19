@@ -26,4 +26,6 @@ public interface ArtworkService {
     ArtworkDto findByComment(Comment comment);
 
     ArtworkDto findByChapter(Chapter chapter);
+
+    ArtworkDto update(ArtworkDto artworkDto, String artworkId);
 }

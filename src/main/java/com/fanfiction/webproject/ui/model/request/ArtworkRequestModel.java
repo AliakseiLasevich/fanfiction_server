@@ -1,6 +1,5 @@
 package com.fanfiction.webproject.ui.model.request;
 
-
 import lombok.Data;
 
 import java.util.List;

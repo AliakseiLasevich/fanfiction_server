@@ -7,5 +7,7 @@ import java.util.List;
 public interface ChapterService {
     Chapter getByArtworkIdAndChapterNumber(String artworkId, int chapterNumber);
 
-    List<Chapter> getByArtworkId(String artworkId);
+    List<Chapter> getChaptersByArtworkId(String artworkId);
+
+    List<Chapter> updateChapters(String artworkId, List<Chapter> chapters);
 }

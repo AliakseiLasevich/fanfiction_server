@@ -6,10 +6,7 @@ import com.fanfiction.webproject.entity.*;
 import com.fanfiction.webproject.exceptions.ArtworkServiceException;
 import com.fanfiction.webproject.mappers.ArtworkMapper;
 import com.fanfiction.webproject.repository.ArtworkRepository;
-import com.fanfiction.webproject.service.interfaces.ArtworkService;
-import com.fanfiction.webproject.service.interfaces.GenreService;
-import com.fanfiction.webproject.service.interfaces.TagService;
-import com.fanfiction.webproject.service.interfaces.UserService;
+import com.fanfiction.webproject.service.interfaces.*;
 import com.fanfiction.webproject.ui.model.response.ErrorMessages;
 import com.fanfiction.webproject.utils.Utils;
 import com.google.common.collect.Lists;
@@ -29,14 +26,16 @@ public class ArtworkServiceImpl implements ArtworkService {
 
 
     private ArtworkRepository artworkRepository;
+    private ChapterService chapterService;
     private UserService userService;
     private TagService tagService;
     private GenreService genreService;
     private final Utils utils;
 
     @Autowired
-    public ArtworkServiceImpl(ArtworkRepository artworkRepository, UserService userService, Utils utils, TagService tagService, GenreService genreService) {
+    public ArtworkServiceImpl(ArtworkRepository artworkRepository, UserService userService, Utils utils, TagService tagService, GenreService genreService, ChapterService chapterService) {
         this.artworkRepository = artworkRepository;
+        this.chapterService = chapterService;
         this.userService = userService;
         this.tagService = tagService;
         this.genreService = genreService;
@@ -49,11 +48,14 @@ public class ArtworkServiceImpl implements ArtworkService {
         if (artworkEntities.size() == 0) {
             throw new ArtworkServiceException(ErrorMessages.NO_RECORDS_IN_BASE.getErrorMessage());
         }
+        return mapEntitiesToDtos(artworkEntities);
+    }
+
+    private List<ArtworkDto> mapEntitiesToDtos(List<Artwork> artworkEntities) {
         return artworkEntities.stream()
                 .map(ArtworkMapper.INSTANCE::entityToDto)
                 .collect(Collectors.toList());
     }
-
 
     @Override
     public ArtworkDto findById(String artworkId) {
@@ -66,65 +68,83 @@ public class ArtworkServiceImpl implements ArtworkService {
 
     @Override
     public List<ArtworkDto> findByUserId(String userId) {
+        UserEntity userEntity = getUserEntity(userId);
+        List<Artwork> artworkEntities = userEntity.getArtworkEntities();
+        return mapEntitiesToDtos(artworkEntities);
+    }
+
+    private UserEntity getUserEntity(String userId) {
         UserEntity userEntity = userService.getUserEntityByUserId(userId);
         if (userEntity == null) {
             throw new ArtworkServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
         }
-        List<Artwork> artworkEntities = userEntity.getArtworkEntities();
-        return artworkEntities.stream()
-                .map(ArtworkMapper.INSTANCE::entityToDto)
-                .collect(Collectors.toList());
+        return userEntity;
     }
 
     @Override
     public ArtworkPreviewPageDto getArtworksPreviewPageByUserId(String userId, int page, int limit) {
-        UserEntity userEntity = userService.getUserEntityByUserId(userId);
-        if (userEntity == null) {
-            throw new ArtworkServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
-        }
+        UserEntity userEntity = getUserEntity(userId);
+        Pageable pageableRequest = getPageableRequest(page, limit);
+        Page<Artwork> artworkPage = artworkRepository.findByUserIdOrderByCreationDate(userEntity.getId(), pageableRequest);
+        List<ArtworkDto> currentPage = getArtworkDtosPage(artworkPage);
+        return new ArtworkPreviewPageDto(currentPage, artworkPage.getTotalPages());
+    }
 
+    private Pageable getPageableRequest(int page, int limit) {
         if (page > 0) {
             page = page - 1;
         }
+        return PageRequest.of(page, limit);
+    }
 
-        Pageable pageableRequest = PageRequest.of(page, limit);
-        Page<Artwork> artworkPage = artworkRepository.findByUserIdOrderByCreationDate(userEntity.getId(), pageableRequest);
-        List<Artwork> artworkEntities = artworkPage.getContent();
-        List<ArtworkDto> currentPage = artworkEntities.stream()
-                .map(ArtworkMapper.INSTANCE::entityToDto)
-                .collect(Collectors.toList());
 
+    @Override
+    public ArtworkPreviewPageDto getArtworksPreviewPage(int page, int limit) {
+        Pageable pageableRequest = getPageableRequest(page, limit);
+        Page<Artwork> artworkPage = artworkRepository.findAllByOrderByCreationDateDesc(pageableRequest);
+        List<ArtworkDto> currentPage = getArtworkDtosPage(artworkPage);
         return new ArtworkPreviewPageDto(currentPage, artworkPage.getTotalPages());
+    }
+
+    private List<ArtworkDto> getArtworkDtosPage(Page<Artwork> artworkPage) {
+        List<Artwork> artworkEntities = artworkPage.getContent();
+        return mapEntitiesToDtos(artworkEntities);
     }
 
     @Transactional
     @Override
     public ArtworkDto createArtwork(ArtworkDto artworkDto) {
         Artwork artwork = ArtworkMapper.INSTANCE.dtoToEntity(artworkDto);
+        artwork.setCreationDate(LocalDateTime.now());
         artwork.setUser(userService.getUserEntityByUserId(artworkDto.getUserId()));
         artwork.setArtworkId(utils.generateRandomString(30));
         artwork.setGenre(genreService.findOrSave(artworkDto.getGenre().getName()));
         List<Tag> tags = artworkDto.getTags().stream().map(tag -> tagService.findOrSave(tag.getName())).collect(Collectors.toList());
         artwork.setTags(tags);
-        artwork.setCreationDate(LocalDateTime.now());
         Artwork storedArtwork = artworkRepository.save(artwork);
-
         return ArtworkMapper.INSTANCE.entityToDto(storedArtwork);
     }
 
     @Override
-    public ArtworkPreviewPageDto getArtworksPreviewPage(int page, int limit) {
-        if (page > 0) {
-            page = page - 1;
+    public ArtworkDto update(ArtworkDto artworkDto, String artworkId) {
+        Artwork artwork = artworkRepository.findByArtworkId(artworkId);
+        if (artwork == null) {
+            throw new ArtworkServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
         }
-        Pageable pageableRequest = PageRequest.of(page, limit);
-        Page<Artwork> artworkPage = artworkRepository.findAllByOrderByCreationDateDesc(pageableRequest);
-        List<Artwork> artworkEntities = artworkPage.getContent();
-        List<ArtworkDto> currentPage = artworkEntities.stream()
-                .map(ArtworkMapper.INSTANCE::entityToDto)
-                .collect(Collectors.toList());
-        return new ArtworkPreviewPageDto(currentPage, artworkPage.getTotalPages());
+        artwork.setName(artworkDto.getName());
+        artwork.setSummary(artworkDto.getSummary());
+
+
+        List<Chapter> edited = chapterService.updateChapters(artworkId, artworkDto.getChapters());
+
+        artwork.setChapters(edited);
+        artwork.setGenre(genreService.findOrSave(artworkDto.getGenre().getName()));
+        List<Tag> tags = artworkDto.getTags().stream().map(tag -> tagService.findOrSave(tag.getName())).collect(Collectors.toList());
+        artwork.setTags(tags);
+        Artwork updatedArtwork = artworkRepository.save(artwork);
+        return ArtworkMapper.INSTANCE.entityToDto(updatedArtwork);
     }
+
 
     @Override
     public Artwork findArtworkEntityByArtworkId(String artworkId) {
@@ -140,4 +160,6 @@ public class ArtworkServiceImpl implements ArtworkService {
     public ArtworkDto findByChapter(Chapter chapter) {
         return ArtworkMapper.INSTANCE.entityToDto(artworkRepository.findByChaptersContains(chapter));
     }
+
+
 }

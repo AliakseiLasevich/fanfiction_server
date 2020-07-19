@@ -23,6 +23,6 @@ public class Rating {
     @OneToOne
     private UserEntity userEntity;
 
-    @OneToOne
+    @ManyToOne
     private Artwork artwork;
 }

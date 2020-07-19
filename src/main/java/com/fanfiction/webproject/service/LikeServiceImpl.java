@@ -42,6 +42,11 @@ public class LikeServiceImpl implements LikeService {
     }
 
     @Override
+    public List<Like> getLikesByChapter(Chapter chapter) {
+        return likeRepository.findLikesByChapter(chapter);
+    }
+
+    @Override
     public LikeDto create(String userId, String artworkId, int chapterNumber, boolean likeValue) {
         Chapter chapter = chapterService.getByArtworkIdAndChapterNumber(artworkId, chapterNumber);
         UserEntity userEntity = userService.getUserEntityByUserId(userId);
@@ -61,7 +66,7 @@ public class LikeServiceImpl implements LikeService {
     }
 
     private List<Like> getUserLikesByArtworkId(String userId, String artworkId) {
-        List<Chapter> chapters = chapterService.getByArtworkId(artworkId);
+        List<Chapter> chapters = chapterService.getChaptersByArtworkId(artworkId);
         List<Like> likes = chapters.stream()
                 .map(chapter -> likeRepository.findLikeByUserEntityUserIdAndChapter(userId, chapter))
                 .collect(Collectors.toList());

@@ -5,8 +5,8 @@ import lombok.Data;
 @Data
 public class ChapterRequestModel {
 
-    private int index;
+    private int chapterNumber;
     private String title;
     private String content;
-    private String imgUrl;
+    private String imageUrl;
 }

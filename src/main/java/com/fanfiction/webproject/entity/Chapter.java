@@ -25,10 +25,10 @@ public class Chapter implements Serializable {
     private String title;
 
     @Field
-    @Column(nullable = false)
+    @Column(nullable = false, length = 15000)
     private String content;
 
-    @Column(nullable = true)
+    @Column(nullable = true, length = 300)
     private String imageUrl;
 
     @JsonIgnore
@@ -36,4 +36,7 @@ public class Chapter implements Serializable {
     @JoinColumn(name = "artwork_id")
     private Artwork artwork;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "chapter")
+    private List<Like> likes;
 }

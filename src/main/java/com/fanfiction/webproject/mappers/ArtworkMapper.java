@@ -27,8 +27,6 @@ public interface ArtworkMapper {
 
     ArtworkDto requestModelToDto(ArtworkRequestModel artworkRequestModel);
 
-    @Mapping(source = "index", target = "chapterNumber")
-    @Mapping(source = "imgUrl", target = "imageUrl")
     Chapter chapterRequestToChapterEntity(ChapterRequestModel chapterRequestModel);
 
     @Mapping(source = "tag", target = "name")

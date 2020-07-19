@@ -47,4 +47,7 @@ public class Artwork implements Serializable {
 
     @OneToMany(mappedBy = "artwork")
     private List<Comment> comments;
+
+    @OneToMany(mappedBy = "artwork")
+    private List<Rating> ratings;
 }

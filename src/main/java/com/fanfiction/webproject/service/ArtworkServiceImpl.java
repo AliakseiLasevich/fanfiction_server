@@ -68,7 +68,7 @@ public class ArtworkServiceImpl implements ArtworkService {
     @Override
     public List<ArtworkDto> findByUserId(String userId) {
         UserEntity userEntity = getUserEntity(userId);
-        List<Artwork> artworkEntities = userEntity.getArtworkEntities();
+        List<Artwork> artworkEntities = artworkRepository.findByActiveTrueAndUser(userEntity);
         return mapEntitiesToDtos(artworkEntities);
     }
 

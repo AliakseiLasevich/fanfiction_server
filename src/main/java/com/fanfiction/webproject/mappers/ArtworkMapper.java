@@ -9,6 +9,7 @@ import com.fanfiction.webproject.ui.model.request.ArtworkRequestModel;
 import com.fanfiction.webproject.ui.model.request.ChapterRequestModel;
 import com.fanfiction.webproject.ui.model.response.ArtworkPreviewRest;
 import com.fanfiction.webproject.ui.model.response.ArtworkRest;
+import com.fanfiction.webproject.ui.model.response.ChapterRest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -28,6 +29,8 @@ public interface ArtworkMapper {
     ArtworkDto requestModelToDto(ArtworkRequestModel artworkRequestModel);
 
     Chapter chapterRequestToChapterEntity(ChapterRequestModel chapterRequestModel);
+
+    ChapterRest chapterModelToRest(Chapter chapter);
 
     @Mapping(source = "tag", target = "name")
     Tag tagStringToEntity(String tag);

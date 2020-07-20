@@ -4,9 +4,8 @@ import com.fanfiction.webproject.entity.Chapter;
 import com.fanfiction.webproject.exceptions.ChapterServiceException;
 import com.fanfiction.webproject.repository.ChapterRepository;
 import com.fanfiction.webproject.service.interfaces.ChapterService;
-import com.fanfiction.webproject.service.interfaces.LikeService;
 import com.fanfiction.webproject.ui.model.response.ErrorMessages;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.fanfiction.webproject.utils.Utils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -15,11 +14,13 @@ import java.util.List;
 @Service
 public class ChapterServiceImpl implements ChapterService {
 
-    @Autowired
-    private ChapterRepository chapterRepository;
+    private final ChapterRepository chapterRepository;
+    private final Utils utils;
 
-    @Autowired
-    private LikeService likeService;
+    public ChapterServiceImpl(ChapterRepository chapterRepository, Utils utils) {
+        this.chapterRepository = chapterRepository;
+        this.utils = utils;
+    }
 
     @Override
     public Chapter getByArtworkIdAndChapterNumber(String artworkId, int chapterNumber) {
@@ -34,18 +35,28 @@ public class ChapterServiceImpl implements ChapterService {
         return chapterRepository.findChapterByArtworkArtworkId(artworkId);
     }
 
-    //    TODO handle if chapters size was increased
+
     @Override
-    public List<Chapter> updateChapters(String artworkId, List<Chapter> newChapters) {
+    public List<Chapter> updateChapters(String artworkId, List<Chapter> updatedChapters) {
         List<Chapter> returnValue = new ArrayList<>();
-        List<Chapter> oldChapters = getChaptersByArtworkId(artworkId);
-        for (int i = 0; i < newChapters.size(); i++) {
-            Chapter toEdit = newChapters.get(i);
-            toEdit.setId(oldChapters.get(i).getId());
-            toEdit.setLikes(likeService.getLikesByChapter(oldChapters.get(i)));
-            returnValue.add(toEdit);
+        for (Chapter chapter : updatedChapters) {
+            if (chapter.getChapterId() != null) {
+                Chapter ch = chapterRepository.findChapterByChapterId(chapter.getChapterId());
+                ch.setChapterNumber(chapter.getChapterNumber());
+                ch.setContent(chapter.getContent());
+                ch.setImageUrl(chapter.getImageUrl());
+                ch.setTitle(chapter.getTitle());
+                returnValue.add(ch);
+            } else {
+                returnValue.add(createNewChapter(chapter));
+            }
         }
         return returnValue;
+    }
+
+    private Chapter createNewChapter(Chapter chapter) {
+        chapter.setChapterId(utils.generateRandomString(30));
+        return chapterRepository.save(chapter);
     }
 
 }

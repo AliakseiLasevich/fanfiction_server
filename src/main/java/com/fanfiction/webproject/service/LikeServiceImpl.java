@@ -22,7 +22,6 @@ public class LikeServiceImpl implements LikeService {
 
 
     private final LikeRepository likeRepository;
-
     private final ChapterService chapterService;
     private final UserService userService;
 

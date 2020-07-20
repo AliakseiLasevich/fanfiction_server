@@ -26,7 +26,7 @@ public class UserPrincipal implements UserDetails {
     }
 
 
-    //TODO  ?
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new HashSet<>();

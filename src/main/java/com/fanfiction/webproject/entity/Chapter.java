@@ -19,6 +19,9 @@ public class Chapter implements Serializable {
     private long id;
 
     @Column(nullable = false)
+    private String chapterId;
+
+    @Column(nullable = false)
     private int chapterNumber;
 
     @Column(nullable = false)

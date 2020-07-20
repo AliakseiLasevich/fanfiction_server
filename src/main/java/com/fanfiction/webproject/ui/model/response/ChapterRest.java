@@ -1,12 +1,12 @@
-package com.fanfiction.webproject.ui.model.request;
+package com.fanfiction.webproject.ui.model.response;
 
 import lombok.Data;
 
 @Data
-public class ChapterRequestModel {
+public class ChapterRest {
 
-    private int chapterNumber;
     private String chapterId;
+    private int chapterNumber;
     private String title;
     private String content;
     private String imageUrl;

@@ -11,4 +11,6 @@ public interface ChapterRepository extends JpaRepository<Chapter, Long> {
     Chapter findChapterByArtworkArtworkIdAndChapterNumber(String artworkId, int chapterNumber);
 
     List<Chapter> findChapterByArtworkArtworkId(String artworkId);
+
+    Chapter findChapterByChapterId(String chapterId);
 }

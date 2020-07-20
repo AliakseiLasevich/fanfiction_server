@@ -106,8 +106,9 @@ public class ArtworkServiceImpl implements ArtworkService {
         return mapEntitiesToDtos(artworkEntities);
     }
 
-    @Transactional
+
     @Override
+    @Transactional
     public ArtworkDto createArtwork(ArtworkDto artworkDto) {
         Artwork artwork = ArtworkMapper.INSTANCE.dtoToEntity(artworkDto);
         artwork.setCreationDate(LocalDateTime.now());
@@ -116,11 +117,15 @@ public class ArtworkServiceImpl implements ArtworkService {
         artwork.setGenre(genreService.findOrSave(artworkDto.getGenre().getName()));
         List<Tag> tags = artworkDto.getTags().stream().map(tag -> tagService.findOrSave(tag.getName())).collect(Collectors.toList());
         artwork.setTags(tags);
+        artwork.setChapters(artworkDto.getChapters().stream()
+                .peek(chapter -> chapter.setChapterId(utils.generateRandomString(30)))
+                .collect(Collectors.toList()));
         Artwork storedArtwork = artworkRepository.save(artwork);
         return ArtworkMapper.INSTANCE.entityToDto(storedArtwork);
     }
 
     @Override
+    @Transactional
     public ArtworkDto update(ArtworkDto artworkDto, String artworkId) {
         Artwork artwork = artworkRepository.findByArtworkId(artworkId);
         checkArtworkExist(artwork);
@@ -139,6 +144,7 @@ public class ArtworkServiceImpl implements ArtworkService {
     }
 
     @Override
+    @Transactional
     public void deleteArtwork(String artworkId) {
         Artwork artwork = artworkRepository.findByArtworkId(artworkId);
         checkArtworkExist(artwork);

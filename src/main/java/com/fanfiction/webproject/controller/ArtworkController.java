@@ -51,7 +51,7 @@ public class ArtworkController {
         return ArtworkMapper.INSTANCE.dtoToArtworkRest(updated);
     }
 
-    @GetMapping(path = "/top")
+    @GetMapping(path = "/artworks/top")
     public List<ArtworkPreviewRest> getTopArtworksByRating(@RequestParam int limit) {
         List<ArtworkDto> topArtworks = artworkService.findTopOrderByAvg(limit);
         return topArtworks.stream()
@@ -59,7 +59,7 @@ public class ArtworkController {
                 .collect(Collectors.toList());
     }
 
-    @DeleteMapping(path = "/{userId}/{artworkId}",
+    @DeleteMapping(path = "/artworks/{userId}/{artworkId}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ROLE_ADMIN') or #userId == principal.userId")
     public OperationStatusModel deleteArtwork(@PathVariable String artworkId, @PathVariable String userId) {

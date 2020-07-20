@@ -5,6 +5,7 @@ import com.fanfiction.webproject.dto.ArtworkPreviewPageDto;
 import com.fanfiction.webproject.entity.Artwork;
 import com.fanfiction.webproject.entity.Chapter;
 import com.fanfiction.webproject.entity.Comment;
+import com.fanfiction.webproject.ui.model.response.ArtworkPreviewRest;
 
 import java.util.List;
 
@@ -28,4 +29,8 @@ public interface ArtworkService {
     ArtworkDto findByChapter(Chapter chapter);
 
     ArtworkDto update(ArtworkDto artworkDto, String artworkId);
+
+    List<ArtworkDto> findTopOrderByAvg(int limit);
+
+    void deleteArtwork(String artworkId);
 }

@@ -15,19 +15,21 @@ import java.util.Optional;
 
 @Repository
 public interface ArtworkRepository extends PagingAndSortingRepository<Artwork, Long> {
+
+    List<Artwork> findByActiveTrue();
+
     Artwork findByArtworkId(String artworkId);
 
-    Page<Artwork> findAllByOrderByCreationDateDesc(Pageable pageable);
+    Page<Artwork> findByActiveTrueOrderByCreationDateDesc(Pageable pageable);
 
-    Page<Artwork> findByUserIdOrderByCreationDate(long userId, Pageable pageableRequest);
+    Page<Artwork> findArtworksByActiveTrueAndUserIdOrderByCreationDateDesc(long userId, Pageable pageableRequest);
 
     Artwork findByCommentsContains(Comment comment);
 
     Artwork findByChaptersContains(Chapter chapter);
 
-    @Query(value = "SELECT *, (SELECT AVG(value) FROM Rating WHERE  artwork_id = artwork.id) AS avg_rating " +
-            "from Artwork ORDER BY avg_rating LIMIT 5", nativeQuery = true)
-    List<Artwork> findTop5OrderByAvg();
+    @Query(value = "select a from Artwork a left join a.ratings r  where a.active = true group by a order by avg (r.value) desc ")
+    List<Artwork> findTopOrderByAvg(@Param("limit") int limit);
 
 
 }

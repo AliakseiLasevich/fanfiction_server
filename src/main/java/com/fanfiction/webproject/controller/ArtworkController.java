@@ -5,13 +5,16 @@ import com.fanfiction.webproject.exceptions.UserServiceException;
 import com.fanfiction.webproject.mappers.ArtworkMapper;
 import com.fanfiction.webproject.service.interfaces.ArtworkService;
 import com.fanfiction.webproject.ui.model.request.ArtworkRequestModel;
-import com.fanfiction.webproject.ui.model.response.ArtworkRest;
-import com.fanfiction.webproject.ui.model.response.ErrorMessages;
+import com.fanfiction.webproject.ui.model.response.*;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class ArtworkController {
@@ -46,6 +49,25 @@ public class ArtworkController {
         ArtworkDto artworkDto = convertRequestToDto(artworkRequestModel, userId);
         ArtworkDto updated = artworkService.update(artworkDto, artworkId);
         return ArtworkMapper.INSTANCE.dtoToArtworkRest(updated);
+    }
+
+    @GetMapping(path = "/top")
+    public List<ArtworkPreviewRest> getTopArtworksByRating(@RequestParam int limit) {
+        List<ArtworkDto> topArtworks = artworkService.findTopOrderByAvg(limit);
+        return topArtworks.stream()
+                .map(ArtworkMapper.INSTANCE::dtoToArtworkPreviewRest)
+                .collect(Collectors.toList());
+    }
+
+    @DeleteMapping(path = "/{userId}/{artworkId}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or #userId == principal.userId")
+    public OperationStatusModel deleteArtwork(@PathVariable String artworkId, @PathVariable String userId) {
+        artworkService.deleteArtwork(artworkId);
+        OperationStatusModel operationStatusModel = new OperationStatusModel();
+        operationStatusModel.setOperationName(RequestOperationName.DELETE.name());
+        operationStatusModel.setOperationResult(RequestOperationStatus.SUCCESS.name());
+        return operationStatusModel;
     }
 
     private ArtworkDto convertRequestToDto(@RequestBody ArtworkRequestModel artworkRequestModel, @PathVariable String userId) {

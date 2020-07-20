@@ -5,8 +5,6 @@ import com.fanfiction.webproject.mappers.CommentMapper;
 import com.fanfiction.webproject.service.interfaces.CommentService;
 import com.fanfiction.webproject.ui.model.request.CommentRequest;
 import com.fanfiction.webproject.ui.model.response.CommentResponse;
-import com.fanfiction.webproject.ui.model.response.OperationStatusModel;
-import com.fanfiction.webproject.ui.model.response.RequestOperationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;

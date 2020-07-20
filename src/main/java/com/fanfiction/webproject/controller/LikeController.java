@@ -47,18 +47,6 @@ public class LikeController {
     }
 
 
-    @PreAuthorize("#userId == principal.userId")
-    @PutMapping(path = "/{userId}/{artworkId}/{chapterNumber}", consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.OK)
-    public LikeRest putLike(@RequestBody LikeRequestModel requestModel,
-                            @PathVariable String userId,
-                            @PathVariable String artworkId,
-                            @PathVariable int chapterNumber) {
-        validateLikeRequestModel(requestModel, userId, artworkId, chapterNumber);
-        LikeDto likeDto = likeService.update(userId, artworkId, chapterNumber, requestModel.isLike());
-        return LikeMapper.INSTANCE.dtoToRest(likeDto);
-    }
 
     private void validateLikeRequestModel(LikeRequestModel requestModel,
                                           String userId,

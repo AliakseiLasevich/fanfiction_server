@@ -55,15 +55,6 @@ public class LikeServiceImpl implements LikeService {
         return createLike(likeValue, chapter, userEntity);
     }
 
-    @Override
-    public LikeDto update(String userId, String artworkId, int chapterNumber, boolean like) {
-        Chapter chapter = chapterService.getByArtworkIdAndChapterNumber(artworkId, chapterNumber - 1);
-        if (!checkLikeExist(userId, chapter)) {
-            throw new LikeServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
-        }
-        return updateLike(userId, artworkId, chapterNumber, like);
-    }
-
     private List<Like> getUserLikesByArtworkId(String userId, String artworkId) {
         List<Chapter> chapters = chapterService.getChaptersByArtworkId(artworkId);
         List<Like> likes = chapters.stream()
@@ -78,14 +69,6 @@ public class LikeServiceImpl implements LikeService {
         createdLike.setUserEntity(userEntity);
         createdLike.setValue(like);
         Like saved = likeRepository.save(createdLike);
-        return LikeMapper.INSTANCE.entityToDto(saved);
-    }
-
-    private LikeDto updateLike(String userId, String artworkId, int chapterNumber, boolean likeValue) {
-//        Like likeToUpdate = findLikeByChapterAndUserId(userId, artworkId, chapterNumber);
-        Like likeToUpdate = null;
-        likeToUpdate.setValue(likeValue);
-        Like saved = likeRepository.save(likeToUpdate);
         return LikeMapper.INSTANCE.entityToDto(saved);
     }
 

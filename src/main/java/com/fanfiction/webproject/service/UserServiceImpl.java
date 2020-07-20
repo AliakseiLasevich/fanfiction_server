@@ -56,17 +56,21 @@ public class UserServiceImpl implements UserService {
         String emailVerificationToken = utils.generateEmailVerificationToken(userDto.getEmail());
         userEntity.setEmailVerificationToken(emailVerificationToken);
 
-        //set roles
-        Collection<RoleEntity> roleEntities = new HashSet<>();
-        RoleEntity roleEntity = roleService.findByName(Roles.ROLE_USER.name());
-        if (roleEntity != null) {
-            roleEntities.add(roleEntity);
-        }
+        Collection<RoleEntity> roleEntities = getUserRole();
         userEntity.setRoles(roleEntities);
 
         UserEntity storedUserDetails = userRepository.save(userEntity);
         emailService.sendVerificationEmailToken(userDto.getEmail(), emailVerificationToken, request);
         return UserMapper.INSTANCE.entityToDto(storedUserDetails);
+    }
+
+    private Collection<RoleEntity> getUserRole() {
+        Collection<RoleEntity> roleEntities = new HashSet<>();
+        RoleEntity roleEntity = roleService.findByName(Roles.ROLE_USER.name());
+        if (roleEntity != null) {
+            roleEntities.add(roleEntity);
+        }
+        return roleEntities;
     }
 
 
@@ -114,7 +118,6 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findByUserId(userDto.getUserId()) == null) {
             throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
         }
-
         UserEntity userEntity = userRepository.findByUserId(userDto.getUserId());
         userEntity.setFirstName(userDto.getFirstName());
         userEntity.setLastName(userDto.getLastName());
@@ -129,8 +132,6 @@ public class UserServiceImpl implements UserService {
                     .map(roleService::findByName).collect(Collectors.toList()));
         }
         UserEntity storedUserDetails = userRepository.save(userEntity);
-
-
         return UserMapper.INSTANCE.entityToDto(storedUserDetails);
     }
 

@@ -11,7 +11,5 @@ public interface LikeService {
 
     LikeDto create(String userId, String artworkId, int chapterNumber, boolean like);
 
-    LikeDto update(String userId, String artworkId, int chapterNumber, boolean like);
-
     List<Like> getLikesByChapter(Chapter chapter);
 }

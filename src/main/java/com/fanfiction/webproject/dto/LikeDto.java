@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class LikeDto {
 
-    private int chapterNumber;
+    private String chapterId;
     private boolean value;
 }

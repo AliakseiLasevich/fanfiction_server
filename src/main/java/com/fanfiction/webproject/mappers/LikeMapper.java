@@ -10,7 +10,7 @@ import org.mapstruct.factory.Mappers;
 @Mapper(componentModel = "spring")
 public interface LikeMapper {
 
-    @Mapping(source = "chapter.chapterNumber", target = "chapterNumber")
+    @Mapping(source = "chapter.chapterId", target = "chapterId")
     LikeDto entityToDto(Like like);
 
     LikeRest dtoToRest(LikeDto likeDto);

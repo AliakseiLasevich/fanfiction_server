@@ -51,18 +51,6 @@
             <version>5.11.5.Final</version>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>org.infinispan</groupId>-->
-<!--            <artifactId>infinispan-directory-provider</artifactId>-->
-<!--            <version>9.2.2.Final</version>-->
-<!--        </dependency>-->
-
-<!--        <dependency>-->
-<!--            <groupId>org.hibernate</groupId>-->
-<!--            <artifactId>hibernate-search-infinispan</artifactId>-->
-<!--            <version>5.11.5.Final</version>-->
-<!--        </dependency>-->
-
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>

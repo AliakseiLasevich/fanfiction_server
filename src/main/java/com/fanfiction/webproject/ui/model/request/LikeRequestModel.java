@@ -4,5 +4,7 @@ import lombok.Data;
 
 @Data
 public class LikeRequestModel {
+
+    private String userId;
     private boolean like;
 }

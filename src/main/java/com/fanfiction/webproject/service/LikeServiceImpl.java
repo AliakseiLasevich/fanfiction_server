@@ -14,9 +14,6 @@ import com.fanfiction.webproject.ui.model.response.ErrorMessages;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
 public class LikeServiceImpl implements LikeService {
 
@@ -33,34 +30,19 @@ public class LikeServiceImpl implements LikeService {
     }
 
     @Override
-    public List<LikeDto> getLikesBy(String userId, String artworkId) {
-        List<Like> likes = getUserLikesByArtworkId(userId, artworkId);
-        return likes.stream()
-                .map(LikeMapper.INSTANCE::entityToDto)
-                .collect(Collectors.toList());
+    public LikeDto getLikeBy(String userId, String chapterId) {
+        Like like = likeRepository.findLikeByUserEntityUserIdAndChapterChapterId(userId, chapterId);
+        return LikeMapper.INSTANCE.entityToDto(like);
     }
 
     @Override
-    public List<Like> getLikesByChapter(Chapter chapter) {
-        return likeRepository.findLikesByChapter(chapter);
-    }
-
-    @Override
-    public LikeDto create(String userId, String artworkId, int chapterNumber, boolean likeValue) {
-        Chapter chapter = chapterService.getByArtworkIdAndChapterNumber(artworkId, chapterNumber);
+    public LikeDto create(String userId, String chapterId, boolean likeValue) {
+        Chapter chapter = chapterService.getByChapterId(chapterId);
         UserEntity userEntity = userService.getUserEntityByUserId(userId);
-        if (checkLikeExist(userId, chapter)) {
+        if (checkLikeExist(userId, chapter.getChapterId())) {
             throw new LikeServiceException(ErrorMessages.RECORD_ALREADY_EXISTS.getErrorMessage());
         }
         return createLike(likeValue, chapter, userEntity);
-    }
-
-    private List<Like> getUserLikesByArtworkId(String userId, String artworkId) {
-        List<Chapter> chapters = chapterService.getChaptersByArtworkId(artworkId);
-        List<Like> likes = chapters.stream()
-                .map(chapter -> likeRepository.findLikeByUserEntityUserIdAndChapter(userId, chapter))
-                .collect(Collectors.toList());
-        return likes;
     }
 
     private LikeDto createLike(boolean like, Chapter chapter, UserEntity userEntity) {
@@ -72,8 +54,8 @@ public class LikeServiceImpl implements LikeService {
         return LikeMapper.INSTANCE.entityToDto(saved);
     }
 
-    private boolean checkLikeExist(String userId, Chapter chapter) {
-        return likeRepository.findLikeByUserEntityUserIdAndChapter(userId, chapter) != null;
+    private boolean checkLikeExist(String userId, String chapterId) {
+        return likeRepository.findLikeByUserEntityUserIdAndChapterChapterId(userId, chapterId) != null;
     }
 
 }

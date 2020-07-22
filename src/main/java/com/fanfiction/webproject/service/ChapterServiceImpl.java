@@ -23,18 +23,13 @@ public class ChapterServiceImpl implements ChapterService {
     }
 
     @Override
-    public Chapter getByArtworkIdAndChapterNumber(String artworkId, int chapterNumber) {
-        Chapter returnValue = chapterRepository.findChapterByArtworkArtworkIdAndChapterNumber(artworkId, chapterNumber);
+    public Chapter getByChapterId(String chapterId) {
+        Chapter returnValue = chapterRepository.findChapterByChapterId(chapterId);
         if (returnValue == null) {
             throw new ChapterServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
         }
         return returnValue;
     }
-
-    public List<Chapter> getChaptersByArtworkId(String artworkId) {
-        return chapterRepository.findChapterByArtworkArtworkId(artworkId);
-    }
-
 
     @Override
     public List<Chapter> updateChapters(String artworkId, List<Chapter> updatedChapters) {

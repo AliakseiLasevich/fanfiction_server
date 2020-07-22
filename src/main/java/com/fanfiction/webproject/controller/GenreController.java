@@ -10,14 +10,18 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/genres")
+@RequestMapping("/api/genres")
 public class GenreController {
 
+    private final GenreService genreService;
+
     @Autowired
-    private GenreService genreService;
+    public GenreController(GenreService genreService) {
+        this.genreService = genreService;
+    }
 
     @GetMapping
-    private List<Genre> genres() {
+    public List<Genre> genres() {
         return genreService.findAll();
     }
 }

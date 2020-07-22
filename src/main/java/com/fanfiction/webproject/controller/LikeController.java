@@ -14,50 +14,40 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/likes")
+@RequestMapping("/api/likes")
 public class LikeController {
 
+    private final LikeService likeService;
+
     @Autowired
-    private LikeService likeService;
-
-
-    @GetMapping(path = "/{userId}/{artworkId}",
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<LikeDto> getUserLikesByArtworkIdAndChapterNumber(@PathVariable String userId,
-                                                                 @PathVariable String artworkId) {
-        List<LikeDto> likeDtos = likeService.getLikesBy(userId, artworkId);
-        return likeDtos;
+    public LikeController(LikeService likeService) {
+        this.likeService = likeService;
     }
 
-    @PreAuthorize("#userId == principal.userId")
-    @PostMapping(path = "/{userId}/{artworkId}/{chapterNumber}",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
+    @GetMapping(path = "/users/{userId}/chapters/{chapterId}",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.CREATED)
-    public LikeRest postLike(@RequestBody LikeRequestModel requestModel,
-                             @PathVariable String userId,
-                             @PathVariable String artworkId,
-                             @PathVariable int chapterNumber) {
-        validateLikeRequestModel(requestModel, userId, artworkId, chapterNumber);
-        LikeDto likeDto = likeService.create(userId, artworkId, chapterNumber, requestModel.isLike());
+    public LikeRest getUserLikesByChapterIdAndChapterNumber(@PathVariable String userId,
+                                                            @PathVariable String chapterId) {
+        LikeDto likeDto = likeService.getLikeBy(userId, chapterId);
         return LikeMapper.INSTANCE.dtoToRest(likeDto);
     }
 
 
+    @PostMapping(path = "/chapters/{chapterId}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("#requestModel.userId == principal.userId")
+    public LikeRest postLike(@RequestBody LikeRequestModel requestModel,
+                             @PathVariable String chapterId) {
+        validateLikeRequestModel(requestModel, chapterId);
+        LikeDto likeDto = likeService.create(requestModel.getUserId(), chapterId, requestModel.isLike());
+        return LikeMapper.INSTANCE.dtoToRest(likeDto);
+    }
 
-    private void validateLikeRequestModel(LikeRequestModel requestModel,
-                                          String userId,
-                                          String artworkId,
-                                          int chapterNumber) {
-        if (!ObjectUtils.allNotNull(
-                requestModel,
-                userId,
-                artworkId,
-                chapterNumber
-        )) {
+    private void validateLikeRequestModel(LikeRequestModel requestModel, String chapterId) {
+        if (!ObjectUtils.allNotNull(requestModel, chapterId)) {
             throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
         }
     }

@@ -17,57 +17,58 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@RequestMapping("/api/artworks")
 public class ArtworkController {
 
     @Autowired
     private ArtworkService artworkService;
 
-    @GetMapping(path = "/artworks/{artworkId}")
+    @GetMapping(path = "/{artworkId}")
     public ArtworkRest getArtworkById(@PathVariable String artworkId) {
         ArtworkDto artworkDto = artworkService.findById(artworkId);
         return ArtworkMapper.INSTANCE.dtoToArtworkRest(artworkDto);
     }
 
-    @PostMapping(path = "/users/{userId}/artworks", consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public ArtworkRest createArtwork(@RequestBody ArtworkRequestModel artworkRequestModel,
-                                     @PathVariable String userId) {
+    @PreAuthorize("hasRole('ROLE_ADMIN') or #artworkRequestModel.userId == principal.userId")
+    public ArtworkRest createArtwork(@RequestBody ArtworkRequestModel artworkRequestModel) {
         checkRequestModel(artworkRequestModel);
-        ArtworkDto artworkDto = convertRequestToDto(artworkRequestModel, userId);
+        ArtworkDto artworkDto = convertRequestToDto(artworkRequestModel, artworkRequestModel.getUserId());
         ArtworkDto createdArtwork = artworkService.createArtwork(artworkDto);
         return ArtworkMapper.INSTANCE.dtoToArtworkRest(createdArtwork);
     }
 
-    @PutMapping(path = "/users/{userId}/artworks/{artworkId}", consumes = MediaType.APPLICATION_JSON_VALUE,
+    @PutMapping(path = "/{artworkId}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or #artworkRequestModel.userId == principal.userId")
     public ArtworkRest updateArtwork(@RequestBody ArtworkRequestModel artworkRequestModel,
-                                     @PathVariable String userId,
                                      @PathVariable String artworkId) {
         checkRequestModel(artworkRequestModel);
-        ArtworkDto artworkDto = convertRequestToDto(artworkRequestModel, userId);
+        ArtworkDto artworkDto = convertRequestToDto(artworkRequestModel, artworkRequestModel.getUserId());
         ArtworkDto updated = artworkService.update(artworkDto, artworkId);
         return ArtworkMapper.INSTANCE.dtoToArtworkRest(updated);
     }
 
-    @GetMapping(path = "/artworks/top")
-    public List<ArtworkPreviewRest> getTopArtworksByRating(@RequestParam int limit) {
-        List<ArtworkDto> topArtworks = artworkService.findTopOrderByAvg(limit);
-        return topArtworks.stream()
-                .map(ArtworkMapper.INSTANCE::dtoToArtworkPreviewRest)
-                .collect(Collectors.toList());
-    }
 
-    @DeleteMapping(path = "/artworks/{userId}/{artworkId}",
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('ROLE_ADMIN') or #userId == principal.userId")
-    public OperationStatusModel deleteArtwork(@PathVariable String artworkId, @PathVariable String userId) {
+    @DeleteMapping(path = "/{artworkId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or #artworkRequestModel.userId == principal.userId")
+    public OperationStatusModel deleteArtwork(@PathVariable String artworkId, @RequestBody ArtworkRequestModel artworkRequestModel) {
         artworkService.deleteArtwork(artworkId);
         OperationStatusModel operationStatusModel = new OperationStatusModel();
         operationStatusModel.setOperationName(RequestOperationName.DELETE.name());
         operationStatusModel.setOperationResult(RequestOperationStatus.SUCCESS.name());
         return operationStatusModel;
+    }
+
+    @GetMapping(path = "/top/{limit}")
+    public List<ArtworkPreviewRest> getTopArtworksByRating(@PathVariable int limit) {
+        List<ArtworkDto> topArtworks = artworkService.findTopOrderByAvg(limit);
+        return topArtworks.stream()
+                .map(ArtworkMapper.INSTANCE::dtoToArtworkPreviewRest)
+                .collect(Collectors.toList());
     }
 
     private ArtworkDto convertRequestToDto(@RequestBody ArtworkRequestModel artworkRequestModel, @PathVariable String userId) {

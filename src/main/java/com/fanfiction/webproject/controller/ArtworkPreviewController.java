@@ -8,21 +8,19 @@ import com.fanfiction.webproject.ui.model.response.ArtworkPreviewPageRest;
 import com.fanfiction.webproject.ui.model.response.ArtworkPreviewRest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@RequestMapping("/api/artworksPreviews")
 public class ArtworkPreviewController {
 
     @Autowired
     private ArtworkService artworkService;
 
-    @GetMapping(value = "/artworksPreviews", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ArtworkPreviewPageRest getArtworksCards(@RequestParam(value = "page", defaultValue = "0") int page,
                                                    @RequestParam(value = "limit", defaultValue = "5") int limit) {
         ArtworkPreviewPageDto artworksPreviewPageDto = artworkService.getArtworksPreviewPage(page, limit);
@@ -36,7 +34,7 @@ public class ArtworkPreviewController {
         return new ArtworkPreviewPageRest(previewsPage, artworksPreviewPageDto.getPagesCount());
     }
 
-    @GetMapping(path = "/users/{userId}/artworks")
+    @GetMapping(path = "/users/{userId}")
     public ArtworkPreviewPageRest getArtworksPreviewsByUserId(@PathVariable String userId,
                                                               @RequestParam(value = "page", defaultValue = "0") int page,
                                                               @RequestParam(value = "limit", defaultValue = "5") int limit) {

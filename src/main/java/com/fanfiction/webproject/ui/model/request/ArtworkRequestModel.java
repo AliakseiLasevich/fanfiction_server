@@ -7,6 +7,7 @@ import java.util.List;
 @Data
 public class ArtworkRequestModel {
 
+    private String userId;
     private String name;
     private String summary;
     private String genre;

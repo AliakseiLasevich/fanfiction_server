@@ -36,7 +36,6 @@ public class EmailServiceImpl implements EmailService {
                 .append("://")
                 .append(request.getServerName())
                 .append(":3000")
-                .append(request.getContextPath())
                 .toString();
     }
 

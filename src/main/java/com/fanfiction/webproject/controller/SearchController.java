@@ -14,22 +14,24 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/search")
+@RequestMapping("/api/search")
 public class SearchController {
 
+    private final HibernateSearchService searchService;
+
     @Autowired
-    private HibernateSearchService searchService;
+    public SearchController(HibernateSearchService searchService) {
+        this.searchService = searchService;
+    }
 
     @GetMapping
     public List<ArtworkPreviewRest> search(@RequestParam(value = "search", required = false) String q) {
         List<ArtworkDto> searchResults = null;
-
         try {
             searchResults = searchService.fuzzySearch(q);
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
-
         return searchResults.stream()
                 .map(ArtworkMapper.INSTANCE::dtoToArtworkPreviewRest)
                 .collect(Collectors.toList());

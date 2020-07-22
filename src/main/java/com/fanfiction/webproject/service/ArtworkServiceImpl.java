@@ -132,7 +132,6 @@ public class ArtworkServiceImpl implements ArtworkService {
         artwork.setName(artworkDto.getName());
         artwork.setSummary(artworkDto.getSummary());
 
-
         List<Chapter> edited = chapterService.updateChapters(artworkId, artworkDto.getChapters());
 
         artwork.setChapters(edited);
@@ -185,7 +184,11 @@ public class ArtworkServiceImpl implements ArtworkService {
 
     @Override
     public List<ArtworkDto> findTopOrderByAvg(int limit) {
-        List<Artwork> artworks = artworkRepository.findTopOrderByAvg(limit);
-        return artworks.stream().map(ArtworkMapper.INSTANCE::entityToDto).collect(Collectors.toList());
+        Pageable pageableRequest = getPageableRequest(0, limit);
+        Page<Artwork> artworkPage = artworkRepository.findTopOrderByAvg(pageableRequest);
+        List<ArtworkDto> currentPage = getArtworkDtosPage(artworkPage);
+
+//        List<Artwork> artworks = artworkRepository.findTopOrderByAvg(limit);
+        return currentPage;
     }
 }

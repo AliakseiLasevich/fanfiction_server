@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class RatingRequestModel {
 
-    private int value;
+    private double value;
 
 }

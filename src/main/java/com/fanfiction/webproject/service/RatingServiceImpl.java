@@ -41,7 +41,7 @@ public class RatingServiceImpl implements RatingService {
     }
 
     @Override
-    public RatingDto createRating(String userId, String artworkId, int value) {
+    public RatingDto createRating(String userId, String artworkId, double value) {
         if (ratingRepository.findByUserEntityUserIdAndArtworkArtworkId(userId, artworkId) != null) {
             throw new RatingServiceException(ErrorMessages.RECORD_ALREADY_EXISTS.getErrorMessage());
         }

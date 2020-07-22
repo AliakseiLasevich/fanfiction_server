@@ -30,9 +30,8 @@ public interface ArtworkRepository extends PagingAndSortingRepository<Artwork, L
 
     Artwork findByChaptersContains(Chapter chapter);
 
-
-    @Query(value = "select a from Artwork a left join a.ratings r  where a.active = true group by a order by avg (r.value) desc ")
-    List<Artwork> findTopOrderByAvg(@Param("limit") int limit);
+    @Query(value = "select a from Artwork a left join a.ratings r  where a.active = true group by a order by avg (r.value) desc")
+    Page<Artwork> findTopOrderByAvg(Pageable pageable);
 
 
 }

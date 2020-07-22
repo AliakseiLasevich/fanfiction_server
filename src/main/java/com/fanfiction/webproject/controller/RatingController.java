@@ -15,43 +15,46 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/ratings")
+@RequestMapping("/api/ratings")
 public class RatingController {
 
-    @Autowired
-    private RatingService ratingService;
+    private final RatingService ratingService;
 
-    @GetMapping(path = "/{artworkId}",
+    @Autowired
+    public RatingController(RatingService ratingService) {
+        this.ratingService = ratingService;
+    }
+
+    @GetMapping(path = "/artworks/{artworkId}/average",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public RatingRest getArtworkAverageRating(@PathVariable String artworkId) {
         RatingDto ratingDto = ratingService.getAverageRating(artworkId);
         return RatingMapper.INSTANCE.dtoToRest(ratingDto);
     }
 
-    @GetMapping(path = "/{artworkId}/{userId}",
+    @GetMapping(path = "/artworks/{artworkId}/users/{userId}",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public RatingRest getUserArtworkRating(@PathVariable String userId,
-                                            @PathVariable String artworkId) {
+    public RatingRest getUserArtworkRating(@PathVariable String artworkId, @PathVariable String userId) {
         RatingDto ratingDto = ratingService.getRatingBy(userId, artworkId);
         return RatingMapper.INSTANCE.dtoToRest(ratingDto);
     }
 
     @PreAuthorize("#userId == principal.userId")
-    @PostMapping(path = "/{artworkId}/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE,
+    @PostMapping(path = "/artworks/{artworkId}/users/{userId}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public RatingRest createArtwork(
-            @RequestBody RatingRequestModel requestModel,
-            @PathVariable String userId,
-            @PathVariable String artworkId) {
-        if (!ObjectUtils.allNotNull(
-                requestModel,
-                userId,
-                artworkId
-        )) {
-            throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
-        }
+    public RatingRest createRating(@RequestBody RatingRequestModel requestModel, @PathVariable String artworkId, @PathVariable String userId) {
+        validateRequestModel(requestModel, artworkId);
         RatingDto ratingDto = ratingService.createRating(userId, artworkId, requestModel.getValue());
         return RatingMapper.INSTANCE.dtoToRest(ratingDto);
+    }
+
+
+
+    private void validateRequestModel(@RequestBody RatingRequestModel requestModel, @PathVariable String artworkId) {
+        if (!ObjectUtils.allNotNull(requestModel, artworkId)) {
+            throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
+        }
     }
 }

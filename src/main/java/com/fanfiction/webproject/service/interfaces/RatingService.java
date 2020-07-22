@@ -8,5 +8,5 @@ public interface RatingService {
 
     RatingDto getRatingBy(String userId, String artworkId);
 
-    RatingDto createRating(String userId, String artworkId, int value);
+    RatingDto createRating(String userId, String artworkId, double value);
 }

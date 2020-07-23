@@ -33,4 +33,6 @@ public interface ArtworkService {
     List<ArtworkDto> findTopOrderByAvg(int limit);
 
     void deleteArtwork(String artworkId);
+
+    List<ArtworkDto> getArtworksByTag(String tag);
 }

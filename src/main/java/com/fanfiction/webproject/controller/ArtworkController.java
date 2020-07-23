@@ -1,6 +1,7 @@
 package com.fanfiction.webproject.controller;
 
 import com.fanfiction.webproject.dto.ArtworkDto;
+import com.fanfiction.webproject.entity.Artwork;
 import com.fanfiction.webproject.exceptions.UserServiceException;
 import com.fanfiction.webproject.mappers.ArtworkMapper;
 import com.fanfiction.webproject.service.interfaces.ArtworkService;
@@ -20,8 +21,12 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/artworks")
 public class ArtworkController {
 
+    private final ArtworkService artworkService;
+
     @Autowired
-    private ArtworkService artworkService;
+    public ArtworkController(ArtworkService artworkService) {
+        this.artworkService = artworkService;
+    }
 
     @GetMapping(path = "/{artworkId}")
     public ArtworkRest getArtworkById(@PathVariable String artworkId) {
@@ -66,6 +71,16 @@ public class ArtworkController {
     @GetMapping(path = "/top/{limit}")
     public List<ArtworkPreviewRest> getTopArtworksByRating(@PathVariable int limit) {
         List<ArtworkDto> topArtworks = artworkService.findTopOrderByAvg(limit);
+        return convertArtworkDtosToRestPreviews(topArtworks);
+    }
+
+    @GetMapping(path = "/tags/{tag}")
+    public List<ArtworkPreviewRest> getArtworksByTag(@PathVariable String tag) {
+        List<ArtworkDto> artworkDtos = artworkService.getArtworksByTag(tag);
+        return convertArtworkDtosToRestPreviews(artworkDtos);
+    }
+
+    private List<ArtworkPreviewRest> convertArtworkDtosToRestPreviews(List<ArtworkDto> topArtworks) {
         return topArtworks.stream()
                 .map(ArtworkMapper.INSTANCE::dtoToArtworkPreviewRest)
                 .collect(Collectors.toList());

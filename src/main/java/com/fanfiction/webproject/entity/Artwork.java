@@ -1,7 +1,6 @@
 package com.fanfiction.webproject.entity;
 
 import lombok.Data;
-import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.io.Serializable;

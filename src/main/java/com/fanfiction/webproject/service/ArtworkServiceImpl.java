@@ -187,8 +187,15 @@ public class ArtworkServiceImpl implements ArtworkService {
         Pageable pageableRequest = getPageableRequest(0, limit);
         Page<Artwork> artworkPage = artworkRepository.findTopOrderByAvg(pageableRequest);
         List<ArtworkDto> currentPage = getArtworkDtosPage(artworkPage);
-
-//        List<Artwork> artworks = artworkRepository.findTopOrderByAvg(limit);
         return currentPage;
     }
+
+    @Override
+    public List<ArtworkDto> getArtworksByTag(String tagName) {
+        Tag tag = tagService.findByName(tagName);
+        List<Artwork> artworks = artworkRepository.findByTagsContains(tag);
+        return mapEntitiesToDtos(artworks);
+    }
+
+
 }

@@ -1,9 +1,6 @@
 package com.fanfiction.webproject.repository;
 
-import com.fanfiction.webproject.entity.Artwork;
-import com.fanfiction.webproject.entity.Chapter;
-import com.fanfiction.webproject.entity.Comment;
-import com.fanfiction.webproject.entity.UserEntity;
+import com.fanfiction.webproject.entity.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -33,5 +30,6 @@ public interface ArtworkRepository extends PagingAndSortingRepository<Artwork, L
     @Query(value = "select a from Artwork a left join a.ratings r  where a.active = true group by a order by avg (r.value) desc")
     Page<Artwork> findTopOrderByAvg(Pageable pageable);
 
+    List<Artwork> findByTagsContains(Tag tag);
 
 }

@@ -28,9 +28,13 @@ public class RatingServiceImpl implements RatingService {
 
     @Override
     public RatingDto getAverageRating(String artworkId) {
-        double d = ratingRepository.getAverageRatingByArtworkId(artworkId);
+        Double averageRating = ratingRepository.getAverageRatingByArtworkId(artworkId);
         RatingDto ratingDto = new RatingDto();
-        ratingDto.setValue(d);
+        if (averageRating == null) {
+            averageRating = 0.0;
+        }
+        ratingDto.setValue(averageRating);
+        ratingDto.setArtworkId(artworkId);
         return ratingDto;
     }
 

@@ -10,6 +10,7 @@ import org.mapstruct.factory.Mappers;
 @Mapper(componentModel = "spring")
 public interface RatingMapper {
 
+    @Mapping(target = "artworkId", source = "artwork.artworkId")
     RatingDto entityToDto(Rating rating);
 
     RatingRest dtoToRest(RatingDto ratingDto);
